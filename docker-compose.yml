@@ -1,0 +1,184 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: fiozap-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fiozap
+      POSTGRES_PASSWORD: fiozap123
+      POSTGRES_DB: fiozap
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fiozap"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: fiozap-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2-alpine
+    container_name: fiozap-nats
+    restart: unless-stopped
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["--jetstream", "--http_port", "8222"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dbgate:
+    image: dbgate/dbgate:latest
+    container_name: fiozap-dbgate
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - dbgate_data:/root/.dbgate
+    environment:
+      CONNECTIONS: postgres
+
+      LABEL_postgres: FioZap PostgreSQL
+      SERVER_postgres: postgres
+      USER_postgres: fiozap
+      PASSWORD_postgres: fiozap123
+      PORT_postgres: 5432
+      DATABASE_postgres: fiozap
+      ENGINE_postgres: postgres@dbgate-plugin-postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  webhook-tester:
+    image: tarampampam/webhook-tester:2
+    container_name: fiozap-webhook-tester
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      CREATE_SESSION: "true"
+      AUTO_CREATE_SESSION: "true"
+      SESSION_TTL: "1h"
+
+  # ===================== CHATWOOT ===================== #
+  
+  chatwoot:
+    image: chatwoot/chatwoot:latest
+    container_name: fiozap-chatwoot
+    restart: unless-stopped
+    command: sh -c "bundle exec rails db:chatwoot_prepare && bundle exec rails s -p 3000 -b 0.0.0.0"
+    entrypoint: docker/entrypoints/rails.sh
+    ports:
+      - "3001:3000"
+    volumes:
+      - chatwoot_storage:/app/storage
+      - chatwoot_public:/app/public
+    environment:
+      # Chatwoot Config
+      - INSTALLATION_NAME=FioZap
+      - SECRET_KEY_BASE=replace_with_your_secret_key_base_64_chars_min
+      - FRONTEND_URL=http://localhost:3001
+      - DEFAULT_LOCALE=pt_BR
+      - FORCE_SSL=false
+      
+      # Database (usa o mesmo PostgreSQL do FioZap)
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USERNAME=fiozap
+      - POSTGRES_PASSWORD=fiozap123
+      - POSTGRES_DATABASE=chatwoot
+      
+      # Redis
+      - REDIS_URL=redis://redis:6379
+      
+      # Storage
+      - ACTIVE_STORAGE_SERVICE=local
+      
+      # Rails
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - RAILS_LOG_TO_STDOUT=true
+      
+      # Features
+      - USE_INBOX_AVATAR_FOR_BOT=true
+      - ENABLE_ACCOUNT_SIGNUP=true
+      - WEBHOOKS_TRIGGER_TIMEOUT=30
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  chatwoot-sidekiq:
+    image: chatwoot/chatwoot:latest
+    container_name: fiozap-chatwoot-sidekiq
+    restart: unless-stopped
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    volumes:
+      - chatwoot_storage:/app/storage
+      - chatwoot_public:/app/public
+    environment:
+      # Chatwoot Config
+      - INSTALLATION_NAME=FioZap
+      - SECRET_KEY_BASE=replace_with_your_secret_key_base_64_chars_min
+      - FRONTEND_URL=http://localhost:3001
+      - DEFAULT_LOCALE=pt_BR
+      - FORCE_SSL=false
+      
+      # Database
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USERNAME=fiozap
+      - POSTGRES_PASSWORD=fiozap123
+      - POSTGRES_DATABASE=chatwoot
+      
+      # Redis
+      - REDIS_URL=redis://redis:6379
+      
+      # Storage
+      - ACTIVE_STORAGE_SERVICE=local
+      
+      # Rails
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - RAILS_LOG_TO_STDOUT=true
+      
+      # Features
+      - USE_INBOX_AVATAR_FOR_BOT=true
+      - WEBHOOKS_TRIGGER_TIMEOUT=30
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  dbgate_data:
+  chatwoot_storage:
+  chatwoot_public:
