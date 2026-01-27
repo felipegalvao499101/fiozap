@@ -1,18 +1,18 @@
 package dto
 
 type CreateSessionRequest struct {
-	Name string `json:"name"`
+	Name string `json:"Name"`
 }
 
 type SessionResponse struct {
-	Name      string `json:"name"`
-	Token     string `json:"token,omitempty"`
-	JID       string `json:"jid,omitempty"`
-	Phone     string `json:"phone,omitempty"`
-	PushName  string `json:"pushName,omitempty"`
-	Connected bool   `json:"connected"`
+	Name      string `json:"Name"`
+	Token     string `json:"Token,omitempty"`
+	JID       string `json:"JID,omitempty"`
+	Phone     string `json:"Phone,omitempty"`
+	PushName  string `json:"PushName,omitempty"`
+	Connected bool   `json:"Connected"`
 }
 
 type QRResponse struct {
-	Code string `json:"code"`
+	QRCode string `json:"QRCode"`
 }

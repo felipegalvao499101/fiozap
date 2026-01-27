@@ -103,7 +103,7 @@ func (h *SessionHandler) GetQR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dto.Success(w, dto.QRResponse{Code: code})
+	dto.Success(w, dto.QRResponse{QRCode: code})
 }
 
 func (h *SessionHandler) Disconnect(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,26 @@ func (h *SessionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dto.Success(w, map[string]string{"message": "deleted"})
+	dto.Success(w, map[string]string{"Details": "Session deleted"})
+}
+
+func (h *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+
+	session, err := h.manager.GetSession(name)
+	if err != nil {
+		dto.Error(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	if session.Client != nil && session.Client.IsLoggedIn() {
+		if err := session.Client.Logout(r.Context()); err != nil {
+			dto.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+
+	dto.Success(w, map[string]string{"Details": "Logged out"})
 }
 
 func sessionToDTO(s *zap.Session) dto.SessionResponse {

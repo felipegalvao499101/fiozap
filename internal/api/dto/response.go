@@ -6,6 +6,7 @@ import (
 )
 
 type Response struct {
+	Code    int         `json:"code"`
 	Success bool        `json:"success"`
 	Data    interface{} `json:"data,omitempty"`
 	Error   string      `json:"error,omitempty"`
@@ -18,13 +19,13 @@ func JSON(w http.ResponseWriter, status int, data interface{}) {
 }
 
 func Success(w http.ResponseWriter, data interface{}) {
-	JSON(w, http.StatusOK, Response{Success: true, Data: data})
+	JSON(w, http.StatusOK, Response{Code: http.StatusOK, Success: true, Data: data})
 }
 
 func Created(w http.ResponseWriter, data interface{}) {
-	JSON(w, http.StatusCreated, Response{Success: true, Data: data})
+	JSON(w, http.StatusCreated, Response{Code: http.StatusCreated, Success: true, Data: data})
 }
 
 func Error(w http.ResponseWriter, status int, msg string) {
-	JSON(w, status, Response{Success: false, Error: msg})
+	JSON(w, status, Response{Code: status, Success: false, Error: msg})
 }

@@ -1,6 +1,7 @@
 # FioZap
 
 API REST multi-session para WhatsApp usando whatsmeow, com integracao Chatwoot.
+Baseado na WuzAPI (https://github.com/asternic/wuzapi) - mesma convencao de campos JSON PascalCase.
 
 ## Core Commands
 
@@ -17,7 +18,8 @@ fiozap/
 ├── internal/
 │   ├── api/
 │   │   ├── dto/         → Request/Response structs
-│   │   ├── handlers/    → HTTP handlers (session, message)
+│   │   ├── handlers/    → HTTP handlers (session, message, group, chat)
+│   │   ├── middleware/  → Middlewares (auth)
 │   │   └── router/      → Configuracao de rotas Chi
 │   ├── config/          → Configuracao via env vars
 │   ├── database/        → PostgreSQL + migrations
@@ -30,6 +32,22 @@ fiozap/
 └── Dockerfile
 ```
 
+## JSON Conventions (WuzAPI Style)
+
+**IMPORTANTE:** Todos os campos JSON usam PascalCase para compatibilidade com WuzAPI.
+
+```json
+{
+  "code": 200,
+  "success": true,
+  "data": {
+    "Phone": "5511999999999",
+    "Body": "Hello World",
+    "JID": "5511999999999@s.whatsapp.net"
+  }
+}
+```
+
 ## Database Schema
 
 ### Tabela `sessions`
@@ -38,6 +56,7 @@ fiozap/
 |-------------|--------------|-------------------------------|
 | `id`        | VARCHAR(255) | Primary key (UUID)            |
 | `name`      | VARCHAR(255) | Identificador unico da sessao |
+| `token`     | VARCHAR(255) | Token de autenticacao         |
 | `jid`       | VARCHAR(255) | WhatsApp JID                  |
 | `phone`     | VARCHAR(50)  | Numero de telefone            |
 | `pushName`  | VARCHAR(255) | Nome no WhatsApp              |
@@ -62,230 +81,121 @@ curl -H "Authorization: seu_token_global" http://localhost:8080/sessions
 curl -H "Authorization: token_da_sessao" http://localhost:8080/sessions/minha-sessao
 ```
 
-**Ao criar sessao**, o token e retornado na resposta (guarde-o!):
-```json
-{"success":true,"data":{"name":"session1","token":"abc123...","connected":false}}
-```
-
 ## API Endpoints
 
 ### Session (requer GLOBAL_API_TOKEN)
-- `POST /sessions` - Criar sessao `{"name": "session1"}` → retorna token
+- `POST /sessions` - Criar sessao `{"Name": "session1"}` → retorna Token
 - `GET /sessions` - Listar sessoes
 
 ### Session (aceita GLOBAL ou Session Token)
 - `GET /sessions/:name` - Status da sessao
-- `GET /sessions/:name/qr` - QR code (base64 ou image)
+- `GET /sessions/:name/qr` - QR code (`?format=image` para PNG)
 - `POST /sessions/:name/connect` - Conectar
-- `POST /sessions/:name/disconnect` - Desconectar
+- `POST /sessions/:name/disconnect` - Desconectar (mantem sessao)
+- `POST /sessions/:name/logout` - Logout (remove sessao, requer QR)
 - `DELETE /sessions/:name` - Remover sessao
 
-### Messages (aceita GLOBAL ou Session Token)
-- `POST /sessions/:name/messages/text` - Enviar texto
-- `POST /sessions/:name/messages/image` - Enviar imagem
-- `POST /sessions/:name/messages/document` - Enviar documento
-- `POST /sessions/:name/messages/audio` - Enviar audio
-- `POST /sessions/:name/messages/location` - Enviar localizacao
+### Messages
+- `POST /sessions/:name/messages/text` - `{"Phone":"...", "Body":"..."}`
+- `POST /sessions/:name/messages/image` - `{"Phone":"...", "Image":"base64...", "Caption":"..."}`
+- `POST /sessions/:name/messages/video` - `{"Phone":"...", "Video":"base64...", "Caption":"..."}`
+- `POST /sessions/:name/messages/audio` - `{"Phone":"...", "Audio":"base64..."}`
+- `POST /sessions/:name/messages/document` - `{"Phone":"...", "Document":"base64...", "FileName":"..."}`
+- `POST /sessions/:name/messages/sticker` - `{"Phone":"...", "Sticker":"base64..."}`
+- `POST /sessions/:name/messages/location` - `{"Phone":"...", "Latitude":..., "Longitude":..., "Name":"..."}`
+- `POST /sessions/:name/messages/contact` - `{"Phone":"...", "Name":"...", "Vcard":"..."}`
+- `POST /sessions/:name/messages/poll` - `{"Phone":"...", "Question":"...", "Options":[...]}`
+- `POST /sessions/:name/messages/reaction` - `{"Phone":"...", "Id":"msgId", "Body":"❤️"}`
+- `PUT /sessions/:name/messages/:messageId` - `{"Phone":"...", "Body":"new text"}`
+- `DELETE /sessions/:name/messages/:messageId` - `{"Phone":"..."}`
 
-### Users (aceita GLOBAL ou Session Token)
-- `POST /sessions/:name/users/check` - Verificar WhatsApp
+### Users
+- `POST /sessions/:name/users/check` - `{"Phone":["5511...","5521..."]}`
 - `GET /sessions/:name/users/:phone` - Info do usuario
 - `GET /sessions/:name/users/:phone/avatar` - Foto de perfil
 
+### Groups
+- `POST /sessions/:name/groups` - `{"Name":"...", "Participants":[...]}`
+- `GET /sessions/:name/groups` - Listar grupos
+- `GET /sessions/:name/groups/:groupJid` - Info do grupo
+- `PUT /sessions/:name/groups/:groupJid/name` - `{"Name":"..."}`
+- `PUT /sessions/:name/groups/:groupJid/topic` - `{"Topic":"..."}`
+- `PUT /sessions/:name/groups/:groupJid/photo` - `{"Image":"base64..."}`
+- `POST /sessions/:name/groups/:groupJid/leave`
+- `GET /sessions/:name/groups/:groupJid/invite` - Link de convite
+- `POST /sessions/:name/groups/:groupJid/invite/revoke` - Revogar link
+- `POST /sessions/:name/groups/join` - `{"Code":"..."}`
+- `GET /sessions/:name/groups/invite/:code` - Info do convite
+- `POST /sessions/:name/groups/:groupJid/participants` - `{"Phone":[...]}`
+- `DELETE /sessions/:name/groups/:groupJid/participants` - `{"Phone":[...]}`
+- `POST /sessions/:name/groups/:groupJid/participants/promote` - `{"Phone":[...]}`
+- `POST /sessions/:name/groups/:groupJid/participants/demote` - `{"Phone":[...]}`
+- `PUT /sessions/:name/groups/:groupJid/settings/announce` - `{"Value":true}`
+- `PUT /sessions/:name/groups/:groupJid/settings/locked` - `{"Value":true}`
+- `PUT /sessions/:name/groups/:groupJid/settings/approval` - `{"Value":true}`
+
+### Chat
+- `POST /sessions/:name/chat/markread` - `{"Id":["msg1","msg2"], "ChatPhone":"..."}`
+- `POST /sessions/:name/chat/presence` - `{"Phone":"...", "State":"composing", "Media":"audio"}`
+- `PUT /sessions/:name/chat/:chatJid/disappearing` - `{"Duration":"24h|7d|90d|off"}`
+
+### Presence (global)
+- `POST /sessions/:name/presence` - `{"Type":"available|unavailable"}`
+- `POST /sessions/:name/presence/subscribe` - `{"Phone":"..."}`
+
+### Blocklist
+- `GET /sessions/:name/blocklist` - Lista de bloqueados
+- `POST /sessions/:name/blocklist/block` - `{"Phone":"..."}`
+- `POST /sessions/:name/blocklist/unblock` - `{"Phone":"..."}`
+
 ## Modulos e Responsabilidades
 
-### `cmd/server/`
-**Responsabilidade:** Ponto de entrada da aplicacao.
-- Carregar configuracoes
-- Inicializar dependencias (database, logger, manager)
-- Iniciar servidor HTTP
-- Graceful shutdown
-
-**NAO deve:**
-- Conter logica de negocio
-- Importar handlers diretamente
-- Manipular requests/responses
-
----
-
-### `internal/config/`
-**Responsabilidade:** Gerenciamento de configuracoes.
-- Carregar variaveis de ambiente
-- Validar configuracoes obrigatorias
-- Prover struct `Config` imutavel
-
-**NAO deve:**
-- Acessar banco de dados
-- Fazer logging complexo
-- Depender de outros modulos internos
-
----
-
-### `internal/database/`
-**Responsabilidade:** Conexao e migrations do banco de dados.
-- Gerenciar conexao PostgreSQL
-- Executar migrations SQL
-- Prover container sqlstore para whatsmeow
-
-**NAO deve:**
-- Conter queries de negocio (usar repositories)
-- Conhecer entidades de dominio
-- Fazer cache
-
-**Arquivos:**
-- `postgres.go` - Conexao e migration runner
-- `upgrades/*.sql` - Arquivos de migration
-
----
-
-### `internal/logger/`
-**Responsabilidade:** Configuracao de logging.
-- Criar logger zerolog configurado
-- Adapter para whatsmeow (WALogger)
-
-**NAO deve:**
-- Conter logica de negocio
-- Persistir logs (apenas stdout)
-- Depender de outros modulos
-
----
-
 ### `internal/api/dto/`
-**Responsabilidade:** Data Transfer Objects para API.
-- Structs de request (input)
-- Structs de response (output)
-- Funcoes helper (SuccessResponse, ErrorResponse)
-
-**NAO deve:**
-- Conter validacao complexa
-- Acessar banco de dados
-- Conhecer whatsmeow
-
-**Convencoes:**
-- Usar tags `json:"fieldName"`
+**Convencoes PascalCase (WuzAPI style):**
+- Campos JSON: `Phone`, `Body`, `Caption`, `Image`, `Video`, `Document`, etc.
 - Request structs terminam com `Request`
 - Response structs terminam com `Response`
 
----
-
 ### `internal/api/handlers/`
-**Responsabilidade:** Handlers HTTP (controllers).
-- Receber requests HTTP
-- Validar input basico
-- Chamar metodos do Manager
-- Retornar responses padronizadas
-
-**NAO deve:**
-- Conter logica de negocio complexa
-- Acessar banco diretamente
-- Conhecer detalhes do whatsmeow
-
 **Arquivos:**
-- `session.go` - CRUD de sessoes, QR, connect/disconnect
+- `session.go` - CRUD de sessoes, QR, connect/disconnect/logout
 - `message.go` - Envio de mensagens, check phone, user info
-
-**Convencoes:**
-- Handlers sao `func(w http.ResponseWriter, r *http.Request)`
-- Usar `chi.URLParam(r, "name")` para extrair params
-- Usar `dto.Success()`, `dto.Error()`, `dto.Created()` para responses
-
----
-
-### `internal/api/router/`
-**Responsabilidade:** Configuracao de rotas HTTP.
-- Criar router Chi
-- Registrar middlewares (Recoverer, RequestID, Logger)
-- Mapear rotas para handlers
-
-**NAO deve:**
-- Conter logica de handler
-- Acessar banco de dados
-- Instanciar servicos
-
----
+- `group.go` - CRUD de grupos, participantes, settings
+- `chat.go` - MarkRead, Presence, Disappearing, Blocklist
 
 ### `internal/zap/`
-**Responsabilidade:** Gerenciamento de sessoes WhatsApp.
-- CRUD de sessoes em memoria
-- Conectar/Desconectar do WhatsApp
-- Enviar mensagens e medias
-- Tratar eventos do WhatsApp
-
-**NAO deve:**
-- Conhecer HTTP/Echo
-- Acessar DTOs da API
-- Fazer logging excessivo
-
 **Arquivos:**
 - `session.go` - Struct Session com estado da conexao
 - `manager.go` - Gerenciador de sessoes (CRUD, Connect, Disconnect)
-- `send.go` - Metodos de envio (SendText, SendImage, etc)
-- `events.go` - Handler de eventos (Connected, Disconnected, Message)
-
-**Convencoes:**
-- Manager e thread-safe (sync.RWMutex)
-- Session armazena estado em memoria
-- Handlers chamam metodos do Manager diretamente
-
----
-
-### `internal/webhook/`
-**Responsabilidade:** Disparar webhooks para URLs externas (futuro).
-- Enviar eventos via HTTP POST
-- Retry em caso de falha
-- Serializar payload JSON
-
-**NAO deve:**
-- Conhecer whatsmeow diretamente
-- Persistir webhooks
-- Bloquear execucao principal
-
----
-
-### `internal/chatwoot/`
-**Responsabilidade:** Integracao com Chatwoot (futuro).
-- Sincronizar mensagens WhatsApp <-> Chatwoot
-- Gerenciar inbox e contatos
-- Traduzir eventos entre sistemas
-
-**NAO deve:**
-- Conhecer HTTP handlers
-- Acessar whatsmeow diretamente (usar zap/)
-- Gerenciar sessoes
-
----
-
-## Fluxo de Dependencias
-
-```
-cmd/server/
-    ├── config/
-    ├── database/
-    ├── logger/
-    └── api/router/
-            └── api/handlers/
-                    ├── api/dto/
-                    └── zap/ (Manager)
-
-zap/
-    └── database/ (sqlstore container)
-
-chatwoot/ (futuro)
-    ├── zap/ (eventos)
-    └── webhook/ (notificacoes)
-```
-
-**Regra:** Dependencias fluem de cima para baixo. Modulos inferiores NAO importam superiores.
-
----
+- `send.go` - Metodos de envio + Presence + Blocklist
+- `group.go` - Metodos de grupo
+- `chat.go` - MarkRead, Typing, Disappearing
+- `events.go` - Handler de eventos whatsmeow
 
 ## Development Patterns
+
+### JSON Response Format
+```json
+{
+  "code": 200,
+  "success": true,
+  "data": {...}
+}
+```
+
+### Error Response Format
+```json
+{
+  "code": 400,
+  "success": false,
+  "error": "missing Phone in Payload"
+}
+```
 
 ### Coding Style
 - Go 1.22+
 - Usar `internal/` para codigo privado
 - DTOs em `internal/api/dto/`
-- Handlers retornam `dto.Response` padronizado
 - Logs com zerolog
 - Erros wrappados com `fmt.Errorf("context: %w", err)`
 
@@ -295,16 +205,12 @@ chatwoot/ (futuro)
 - Colunas em camelCase com aspas duplas
 - whatsmeow usa suas proprias tabelas (prefixo `whatsmeow_`)
 
-### WhatsApp (zap/)
-- `Manager` gerencia multiplas sessoes e expoe todos os metodos
-- `Session` contem estado da conexao (Client, Device, QRCode)
-- Eventos tratados em `events.go` via funcao package-level
-
 ## Environment Variables
 
 ```env
 SERVER_HOST=0.0.0.0
 SERVER_PORT=8080
+GLOBAL_API_TOKEN=seu_token_super_secreto
 DATABASE_URL=postgres://fiozap:fiozap123@localhost:5432/fiozap?sslmode=disable
 REDIS_URL=redis://localhost:6379
 LOG_LEVEL=debug
@@ -337,3 +243,4 @@ docker compose up -d
 - QR code expira rapido, cliente deve fazer polling
 - Sessoes persistidas no PostgreSQL via sqlstore
 - Sempre usar aspas duplas para colunas camelCase no SQL
+- Todos os campos JSON usam PascalCase (compatibilidade WuzAPI)
