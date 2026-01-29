@@ -9,12 +9,33 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fiozap/fiozap/internal/api/router"
-	"github.com/fiozap/fiozap/internal/config"
-	"github.com/fiozap/fiozap/internal/database"
-	"github.com/fiozap/fiozap/internal/logger"
-	"github.com/fiozap/fiozap/internal/zap"
+	"fiozap/internal/api/router"
+	"fiozap/internal/config"
+	"fiozap/internal/database"
+	"fiozap/internal/logger"
+	"fiozap/internal/providers/wameow"
+
+	_ "fiozap/docs"
 )
+
+// @title           FioZap API
+// @version         1.0
+// @description     API REST multi-session para WhatsApp usando whatsmeow. Baseada na WuzAPI com campos JSON em PascalCase.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   FioZap Support
+// @contact.url    https://github.com/fiozap/fiozap
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @description Token global (GLOBAL_API_TOKEN) ou token da sessao
 
 func main() {
 	cfg := config.Load()
@@ -29,12 +50,12 @@ func main() {
 	defer func() { _ = db.Close() }()
 	log.Info().Msg("Connected to database")
 
-	manager := zap.NewManager(db.Container, log)
+	provider := wameow.New(db.Container, log)
 
 	addr := fmt.Sprintf("%s:%s", cfg.ServerHost, cfg.ServerPort)
 	server := &http.Server{
 		Addr:    addr,
-		Handler: router.New(manager, log, cfg.GlobalAPIToken),
+		Handler: router.New(provider, log, cfg.GlobalAPIToken),
 	}
 
 	go func() {

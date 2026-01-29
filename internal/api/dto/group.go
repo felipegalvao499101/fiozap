@@ -49,3 +49,22 @@ type GroupSettingRequest struct {
 type InviteLinkResponse struct {
 	InviteLink string `json:"InviteLink"`
 }
+
+// Group Request Participants (approval mode)
+
+type GroupRequestParticipantResponse struct {
+	JID         string `json:"JID"`
+	RequestedAt int64  `json:"RequestedAt,omitempty"`
+}
+
+type ApproveParticipantsRequest struct {
+	Phone []string `json:"Phone"`
+}
+
+type RejectParticipantsRequest struct {
+	Phone []string `json:"Phone"`
+}
+
+type GroupMemberAddModeRequest struct {
+	Mode string `json:"Mode"` // all_member_add, admin_add
+}

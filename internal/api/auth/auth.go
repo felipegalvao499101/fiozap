@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/fiozap/fiozap/internal/api/dto"
-	"github.com/fiozap/fiozap/internal/zap"
+	"fiozap/internal/api/dto"
+	"fiozap/internal/domain"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,13 +16,13 @@ const CtxKeyIsGlobal ctxKey = "isGlobal"
 
 type Auth struct {
 	globalToken string
-	manager     *zap.Manager
+	provider    domain.Provider
 }
 
-func New(globalToken string, manager *zap.Manager) *Auth {
+func NewAuth(globalToken string, provider domain.Provider) *Auth {
 	return &Auth{
 		globalToken: globalToken,
-		manager:     manager,
+		provider:    provider,
 	}
 }
 
@@ -67,13 +68,13 @@ func (a *Auth) Session(next http.Handler) http.Handler {
 			return
 		}
 
-		session, err := a.manager.GetSession(name)
+		session, err := a.provider.GetSession(name)
 		if err != nil {
 			dto.Error(w, http.StatusNotFound, "session not found")
 			return
 		}
 
-		if session.Token != token {
+		if session.GetToken() != token {
 			dto.Error(w, http.StatusUnauthorized, "invalid token")
 			return
 		}

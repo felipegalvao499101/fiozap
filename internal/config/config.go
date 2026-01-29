@@ -15,6 +15,10 @@ type Config struct {
 	LogFormat      string
 	WADebug        bool
 	GlobalAPIToken string
+
+	// WhatsApp Cloud API (Meta)
+	CloudAPIPhoneNumberID string
+	CloudAPIAccessToken   string
 }
 
 func Load() *Config {
@@ -29,6 +33,9 @@ func Load() *Config {
 		LogFormat:      getEnv("LOG_FORMAT", "console"),
 		WADebug:        getEnv("WA_DEBUG", "false") == "true",
 		GlobalAPIToken: getEnv("GLOBAL_API_TOKEN", ""),
+
+		CloudAPIPhoneNumberID: getEnv("CLOUD_API_PHONE_NUMBER_ID", ""),
+		CloudAPIAccessToken:   getEnv("CLOUD_API_ACCESS_TOKEN", ""),
 	}
 }
 

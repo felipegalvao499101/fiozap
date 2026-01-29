@@ -1,0 +1,5239 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API REST multi-session para WhatsApp usando whatsmeow. Baseada na WuzAPI com campos JSON em PascalCase.",
+        "title": "FioZap API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "FioZap Support",
+            "url": "https://github.com/fiozap/fiozap"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/sessions": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Lista todas as sessoes WhatsApp criadas",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Listar sessoes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.SessionResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Cria uma nova sessao WhatsApp com o nome informado",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Criar sessao",
+                "parameters": [
+                    {
+                        "description": "Nome da sessao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateSessionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna informacoes de uma sessao especifica",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Obter sessao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Remove sessao e todos os dados associados",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Deletar sessao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/blocklist": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna lista de contatos bloqueados",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocklist"
+                ],
+                "summary": "Listar bloqueados",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BlocklistResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/blocklist/block": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Adiciona contato a lista de bloqueados",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocklist"
+                ],
+                "summary": "Bloquear contato",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Numero a bloquear",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BlockRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BlockActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/blocklist/unblock": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Remove contato da lista de bloqueados",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "blocklist"
+                ],
+                "summary": "Desbloquear contato",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Numero a desbloquear",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.BlockRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BlockActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/calls/reject": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Rejeita uma chamada recebida",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "calls"
+                ],
+                "summary": "Rejeitar chamada",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da chamada",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RejectCallRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.CallActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/chat/markread": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Marca mensagens como lidas",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Marcar como lida",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "IDs das mensagens",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.MarkReadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ChatActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/chat/presence": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia presenca de digitando/gravando audio para um chat",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Enviar presenca no chat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da presenca",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ChatPresenceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ChatActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/chat/{chatJid}/disappearing": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Define tempo de expiracao das mensagens no chat",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chat"
+                ],
+                "summary": "Configurar mensagens temporarias",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do chat",
+                        "name": "chatJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Duracao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.DisappearingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ChatActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/community/link": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Vincula um grupo a uma comunidade (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "community"
+                ],
+                "summary": "Vincular grupo a comunidade",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do vinculo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LinkGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/community/unlink": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Desvincula um grupo de uma comunidade (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "community"
+                ],
+                "summary": "Desvincular grupo de comunidade",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do vinculo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LinkGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/community/{communityJid}/participants": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Lista participantes de uma comunidade (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "community"
+                ],
+                "summary": "Participantes da comunidade",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID da comunidade",
+                        "name": "communityJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/community/{communityJid}/subgroups": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Lista subgrupos de uma comunidade (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "community"
+                ],
+                "summary": "Listar subgrupos",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID da comunidade",
+                        "name": "communityJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/connect": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Inicia conexao da sessao com WhatsApp (gera QR code se necessario)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Conectar sessao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/contacts/check": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Verifica se os numeros informados estao no WhatsApp",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Verificar numeros",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPhoneRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ContactsCheckResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/contacts/{phone}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna informacoes de um contato (status, foto, devices)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Obter info do contato",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Numero do telefone",
+                        "name": "phone",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserInfoResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/contacts/{phone}/avatar": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna URL da foto de perfil do contato",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Obter foto de perfil",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Numero do telefone",
+                        "name": "phone",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AvatarResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/contacts/{phone}/business": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna perfil comercial do contato (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "contacts"
+                ],
+                "summary": "Obter perfil comercial",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Numero do telefone",
+                        "name": "phone",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.BusinessProfileResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/disconnect": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Desconecta a sessao do WhatsApp (mantem dados)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Desconectar sessao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.SessionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Lista todos os grupos da sessao",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Listar grupos",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.GroupResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Cria um novo grupo WhatsApp",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Criar grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do grupo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GroupResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/invite/{code}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna informacoes do grupo pelo codigo de convite",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Info do convite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Codigo do convite",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GroupResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/join": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Entra em um grupo usando codigo de convite",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Entrar no grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Codigo do convite",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.JoinGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna informacoes de um grupo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Obter grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.GroupResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/invite": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna link de convite do grupo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Obter link de convite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.InviteLinkResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/invite/revoke": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Revoga e gera novo link de convite",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Revogar link de convite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.InviteLinkResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/leave": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Sai de um grupo",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Sair do grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/name": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Altera o nome de um grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Alterar nome do grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Novo nome",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupNameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/participants": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Adiciona participantes ao grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Adicionar participantes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ParticipantsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Remove participantes do grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Remover participantes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ParticipantsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/participants/demote": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Rebaixa administradores a participantes comuns",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Rebaixar participantes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ParticipantsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/participants/promote": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Promove participantes a administradores",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Promover participantes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ParticipantsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/photo": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Altera a foto de um grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Alterar foto do grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Imagem base64",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupPhotoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/requests": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Lista solicitacoes de entrada no grupo (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Listar solicitacoes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/requests/approve": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Aprova solicitacoes de entrada no grupo (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Aprovar solicitacoes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApproveParticipantsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/requests/reject": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Rejeita solicitacoes de entrada no grupo (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Rejeitar solicitacoes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Lista de numeros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RejectParticipantsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/settings/announce": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Define se apenas admins podem enviar mensagens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Modo somente admins",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Valor",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupSettingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/settings/approval": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Define se novos membros precisam de aprovacao (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Modo aprovacao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Valor",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupSettingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/settings/locked": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Define se apenas admins podem editar info do grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Bloquear edicao de info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Valor",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupSettingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/settings/memberadd": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Define quem pode adicionar membros (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Modo adicao de membros",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Modo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupMemberAddModeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/groups/{groupJid}/topic": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Altera a descricao/topico de um grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Alterar descricao do grupo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do grupo",
+                        "name": "groupJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Nova descricao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GroupDescriptionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Faz logout da sessao (requer novo QR code para reconectar)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Logout da sessao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/audio": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia audio (base64) para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar audio",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do audio",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendAudioRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/contact": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia contato (vCard) para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar contato",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do contato",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendContactRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/document": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia documento (base64) para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar documento",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do documento",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendDocumentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/image": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia imagem (base64) para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar imagem",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da imagem",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendImageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/location": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia localizacao para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar localizacao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da localizacao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendLocationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/poll": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia enquete para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar enquete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da enquete",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendPollRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/reaction": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia reacao (emoji) para uma mensagem",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar reacao",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da reacao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendReactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/sticker": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia sticker (base64) para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar sticker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do sticker",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendStickerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/text": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia mensagem de texto para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar texto",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da mensagem",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendTextRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/video": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia video (base64) para um contato ou grupo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Enviar video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do video",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SendVideoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/messages/{messageId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Edita uma mensagem enviada",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Editar mensagem",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID da mensagem",
+                        "name": "messageId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Novo conteudo",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.EditMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Revoga/deleta uma mensagem enviada",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "messages"
+                ],
+                "summary": "Revogar mensagem",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID da mensagem",
+                        "name": "messageId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do contato",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RevokeMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.MessageResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/newsletters": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Lista canais que a sessao segue (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Listar canais",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Cria um novo canal/newsletter (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Criar canal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do canal",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateNewsletterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/newsletters/{newsletterJid}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna informacoes de um canal (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Obter canal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do canal",
+                        "name": "newsletterJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/newsletters/{newsletterJid}/follow": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Segue um canal (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Seguir canal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do canal",
+                        "name": "newsletterJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/newsletters/{newsletterJid}/mute": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Ativa/desativa notificacoes do canal (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Silenciar canal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do canal",
+                        "name": "newsletterJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Estado mute",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.NewsletterMuteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/newsletters/{newsletterJid}/reaction": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Envia reacao em mensagem do canal (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Reagir em mensagem",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do canal",
+                        "name": "newsletterJid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados da reacao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.NewsletterReactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/newsletters/{newsletterJid}/unfollow": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deixa de seguir um canal (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "newsletters"
+                ],
+                "summary": "Deixar de seguir",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JID do canal",
+                        "name": "newsletterJid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/presence": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Define status online/offline da sessao",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "presence"
+                ],
+                "summary": "Enviar presenca global",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Tipo de presenca",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PresenceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ChatActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/presence/subscribe": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Se inscreve para receber atualizacoes de presenca de um contato",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "presence"
+                ],
+                "summary": "Inscrever em presenca",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Numero do contato",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PresenceSubscribeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ChatActionResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/privacy": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna configuracoes de privacidade da sessao (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "privacy"
+                ],
+                "summary": "Obter configuracoes de privacidade",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Altera uma configuracao de privacidade (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "privacy"
+                ],
+                "summary": "Alterar privacidade",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Configuracao",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SetPrivacyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/privacy/status": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna configuracoes de privacidade do status (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "privacy"
+                ],
+                "summary": "Privacidade do status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/profile/business/resolve": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Resolve um link de mensagem comercial (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Resolver link comercial",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Link",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResolveBusinessLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/profile/qrlink": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna link QR para adicionar contato (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Obter QR link de contato",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/profile/qrlink/resolve": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Resolve um link QR de contato (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Resolver QR link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Link QR",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResolveContactQRRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/profile/status": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Altera o recado/status do perfil (nao implementado)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Alterar recado",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Novo status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SetStatusMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/qr": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna QR code para autenticacao. Use ?format=image para PNG",
+                "produces": [
+                    "application/json",
+                    "image/png"
+                ],
+                "tags": [
+                    "sessions"
+                ],
+                "summary": "Obter QR code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "image"
+                        ],
+                        "type": "string",
+                        "description": "Formato: image para PNG",
+                        "name": "format",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dto.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.QRResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/sessions/{name}/users/{phone}/business": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna perfil comercial de um contato (nao implementado)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Perfil comercial",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome da sessao",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Numero do telefone",
+                        "name": "phone",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "501": {
+                        "description": "Not Implemented",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ActionResponse": {
+            "type": "object",
+            "properties": {
+                "Details": {
+                    "type": "string",
+                    "example": "Operation completed successfully"
+                }
+            }
+        },
+        "dto.ApproveParticipantsRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.AvatarResponse": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string",
+                    "example": "122345678901234567890"
+                },
+                "URL": {
+                    "type": "string",
+                    "example": "https://pps.whatsapp.net/..."
+                }
+            }
+        },
+        "dto.BlockActionResponse": {
+            "type": "object",
+            "properties": {
+                "Blocklist": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Details": {
+                    "type": "string",
+                    "example": "Contact blocked"
+                }
+            }
+        },
+        "dto.BlockRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.BlocklistResponse": {
+            "type": "object",
+            "properties": {
+                "JIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "5511999999999@s.whatsapp.net",
+                        "5521888888888@s.whatsapp.net"
+                    ]
+                }
+            }
+        },
+        "dto.BusinessProfileResponse": {
+            "type": "object",
+            "properties": {
+                "Address": {
+                    "type": "string"
+                },
+                "Category": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "Email": {
+                    "type": "string"
+                },
+                "JID": {
+                    "type": "string"
+                },
+                "Website": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.CallActionResponse": {
+            "type": "object",
+            "properties": {
+                "Details": {
+                    "type": "string",
+                    "example": "Call rejected"
+                }
+            }
+        },
+        "dto.ChatActionResponse": {
+            "type": "object",
+            "properties": {
+                "Details": {
+                    "type": "string",
+                    "example": "Messages marked as read"
+                }
+            }
+        },
+        "dto.ChatPresenceRequest": {
+            "type": "object",
+            "properties": {
+                "Media": {
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "audio"
+                    ],
+                    "example": ""
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                },
+                "State": {
+                    "type": "string",
+                    "enum": [
+                        "composing",
+                        "paused"
+                    ],
+                    "example": "composing"
+                }
+            }
+        },
+        "dto.CheckPhoneRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "5511999999999",
+                        "5521888888888"
+                    ]
+                }
+            }
+        },
+        "dto.CheckPhoneResponse": {
+            "type": "object",
+            "properties": {
+                "IsInWhatsapp": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "JID": {
+                    "type": "string",
+                    "example": "5511999999999@s.whatsapp.net"
+                },
+                "Query": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.ContactsCheckResponse": {
+            "type": "object",
+            "properties": {
+                "Contacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CheckPhoneResponse"
+                    }
+                }
+            }
+        },
+        "dto.CreateGroupRequest": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "Participants": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.CreateNewsletterRequest": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Picture": {
+                    "description": "base64",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateSessionRequest": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string"
+                },
+                "Provider": {
+                    "description": "\"whatsmeow\" (default) ou \"cloudapi\"",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/dto.ProviderType"
+                        }
+                    ]
+                }
+            }
+        },
+        "dto.DisappearingRequest": {
+            "type": "object",
+            "properties": {
+                "Duration": {
+                    "type": "string",
+                    "enum": [
+                        "24h",
+                        "7d",
+                        "90d",
+                        "off"
+                    ],
+                    "example": "24h"
+                }
+            }
+        },
+        "dto.EditMessageRequest": {
+            "type": "object",
+            "properties": {
+                "Body": {
+                    "type": "string",
+                    "example": "Edited message text"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.GroupDescriptionRequest": {
+            "type": "object",
+            "properties": {
+                "Topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GroupMemberAddModeRequest": {
+            "type": "object",
+            "properties": {
+                "Mode": {
+                    "description": "all_member_add, admin_add",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GroupNameRequest": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GroupPhotoRequest": {
+            "type": "object",
+            "properties": {
+                "Image": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GroupResponse": {
+            "type": "object",
+            "properties": {
+                "GroupCreated": {
+                    "type": "string"
+                },
+                "IsAnnounce": {
+                    "type": "boolean"
+                },
+                "IsLocked": {
+                    "type": "boolean"
+                },
+                "JID": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "OwnerJID": {
+                    "type": "string"
+                },
+                "Participants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ParticipantResponse"
+                    }
+                },
+                "Topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GroupSettingRequest": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.InviteLinkResponse": {
+            "type": "object",
+            "properties": {
+                "InviteLink": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.JoinGroupRequest": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LinkGroupRequest": {
+            "type": "object",
+            "properties": {
+                "ChildJID": {
+                    "type": "string"
+                },
+                "ParentJID": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.MarkReadRequest": {
+            "type": "object",
+            "properties": {
+                "ChatPhone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                },
+                "Id": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "ABCD1234567890",
+                        "EFGH0987654321"
+                    ]
+                },
+                "SenderPhone": {
+                    "type": "string",
+                    "example": "5511888888888"
+                }
+            }
+        },
+        "dto.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string",
+                    "example": "ABCD1234567890"
+                },
+                "Timestamp": {
+                    "type": "integer",
+                    "example": 1704067200
+                }
+            }
+        },
+        "dto.NewsletterMuteRequest": {
+            "type": "object",
+            "properties": {
+                "Mute": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.NewsletterReactionRequest": {
+            "type": "object",
+            "properties": {
+                "Reaction": {
+                    "description": "emoji ou vazio para remover",
+                    "type": "string"
+                },
+                "ServerID": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ParticipantResponse": {
+            "type": "object",
+            "properties": {
+                "IsAdmin": {
+                    "type": "boolean"
+                },
+                "IsSuperAdmin": {
+                    "type": "boolean"
+                },
+                "JID": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ParticipantsRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.PresenceRequest": {
+            "type": "object",
+            "properties": {
+                "Type": {
+                    "type": "string",
+                    "enum": [
+                        "available",
+                        "unavailable"
+                    ],
+                    "example": "available"
+                }
+            }
+        },
+        "dto.PresenceSubscribeRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.ProviderType": {
+            "type": "string",
+            "enum": [
+                "whatsmeow",
+                "cloudapi"
+            ],
+            "x-enum-comments": {
+                "ProviderCloudAPI": "API oficial Meta",
+                "ProviderWhatsmeow": "default - nao-oficial"
+            },
+            "x-enum-descriptions": [
+                "default - nao-oficial",
+                "API oficial Meta"
+            ],
+            "x-enum-varnames": [
+                "ProviderWhatsmeow",
+                "ProviderCloudAPI"
+            ]
+        },
+        "dto.QRResponse": {
+            "type": "object",
+            "properties": {
+                "QRCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RejectCallRequest": {
+            "type": "object",
+            "properties": {
+                "CallFrom": {
+                    "type": "string",
+                    "example": "5511999999999@s.whatsapp.net"
+                },
+                "CallID": {
+                    "type": "string",
+                    "example": "ABCD1234567890"
+                }
+            }
+        },
+        "dto.RejectParticipantsRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "dto.ResolveBusinessLinkRequest": {
+            "type": "object",
+            "properties": {
+                "Link": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResolveContactQRRequest": {
+            "type": "object",
+            "properties": {
+                "Link": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Response": {
+            "description": "Resposta padrao da API FioZap",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {},
+                "error": {
+                    "type": "string",
+                    "example": "error message"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "dto.RevokeMessageRequest": {
+            "type": "object",
+            "properties": {
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendAudioRequest": {
+            "type": "object",
+            "properties": {
+                "Audio": {
+                    "type": "string",
+                    "example": "base64..."
+                },
+                "Mimetype": {
+                    "type": "string",
+                    "example": "audio/ogg; codecs=opus"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendContactRequest": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                },
+                "Vcard": {
+                    "type": "string",
+                    "example": "BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nTEL:+5511999999999\nEND:VCARD"
+                }
+            }
+        },
+        "dto.SendDocumentRequest": {
+            "type": "object",
+            "properties": {
+                "Caption": {
+                    "type": "string",
+                    "example": "Document caption"
+                },
+                "Document": {
+                    "type": "string",
+                    "example": "base64..."
+                },
+                "FileName": {
+                    "type": "string",
+                    "example": "document.pdf"
+                },
+                "Mimetype": {
+                    "type": "string",
+                    "example": "application/pdf"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendImageRequest": {
+            "type": "object",
+            "properties": {
+                "Caption": {
+                    "type": "string",
+                    "example": "Image caption"
+                },
+                "Image": {
+                    "type": "string",
+                    "example": "base64..."
+                },
+                "Mimetype": {
+                    "type": "string",
+                    "example": "image/jpeg"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendLocationRequest": {
+            "type": "object",
+            "properties": {
+                "Address": {
+                    "type": "string",
+                    "example": "Av. Paulista, 1000"
+                },
+                "Latitude": {
+                    "type": "number",
+                    "example": -23.5505
+                },
+                "Longitude": {
+                    "type": "number",
+                    "example": -46.6333
+                },
+                "Name": {
+                    "type": "string",
+                    "example": "Sao Paulo"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendPollRequest": {
+            "type": "object",
+            "properties": {
+                "MultiSelect": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "Options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Red",
+                        "Blue",
+                        "Green"
+                    ]
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                },
+                "Question": {
+                    "type": "string",
+                    "example": "What is your favorite color?"
+                }
+            }
+        },
+        "dto.SendReactionRequest": {
+            "type": "object",
+            "properties": {
+                "Body": {
+                    "type": "string",
+                    "example": "👍"
+                },
+                "Id": {
+                    "type": "string",
+                    "example": "ABCD1234567890"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendStickerRequest": {
+            "type": "object",
+            "properties": {
+                "Mimetype": {
+                    "type": "string",
+                    "example": "image/webp"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                },
+                "Sticker": {
+                    "type": "string",
+                    "example": "base64..."
+                }
+            }
+        },
+        "dto.SendTextRequest": {
+            "type": "object",
+            "properties": {
+                "Body": {
+                    "type": "string",
+                    "example": "Hello World!"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                }
+            }
+        },
+        "dto.SendVideoRequest": {
+            "type": "object",
+            "properties": {
+                "Caption": {
+                    "type": "string",
+                    "example": "Video caption"
+                },
+                "Mimetype": {
+                    "type": "string",
+                    "example": "video/mp4"
+                },
+                "Phone": {
+                    "type": "string",
+                    "example": "5511999999999"
+                },
+                "Video": {
+                    "type": "string",
+                    "example": "base64..."
+                }
+            }
+        },
+        "dto.SessionResponse": {
+            "type": "object",
+            "properties": {
+                "Connected": {
+                    "type": "boolean"
+                },
+                "JID": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Phone": {
+                    "type": "string"
+                },
+                "Provider": {
+                    "$ref": "#/definitions/dto.ProviderType"
+                },
+                "PushName": {
+                    "type": "string"
+                },
+                "Token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SetPrivacyRequest": {
+            "type": "object",
+            "properties": {
+                "Name": {
+                    "description": "groupAdd, lastSeen, status, profile, readReceipts, callAdd, online",
+                    "type": "string"
+                },
+                "Value": {
+                    "description": "all, contacts, contact_blacklist, none, known, match_last_seen",
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SetStatusMessageRequest": {
+            "type": "object",
+            "properties": {
+                "Status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UserInfoResponse": {
+            "type": "object",
+            "properties": {
+                "Devices": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "JID": {
+                    "type": "string",
+                    "example": "5511999999999@s.whatsapp.net"
+                },
+                "PictureID": {
+                    "type": "string"
+                },
+                "Status": {
+                    "type": "string",
+                    "example": "Hey there! I am using WhatsApp."
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Token global (GLOBAL_API_TOKEN) ou token da sessao",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

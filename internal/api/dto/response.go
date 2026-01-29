@@ -5,11 +5,18 @@ import (
 	"net/http"
 )
 
+// Response resposta padrao da API
+// @Description Resposta padrao da API FioZap
 type Response struct {
-	Code    int         `json:"code"`
-	Success bool        `json:"success"`
+	Code    int         `json:"code" example:"200"`
+	Success bool        `json:"success" example:"true"`
 	Data    interface{} `json:"data,omitempty"`
-	Error   string      `json:"error,omitempty"`
+	Error   string      `json:"error,omitempty" example:"error message"`
+}
+
+// ActionResponse resposta generica para acoes
+type ActionResponse struct {
+	Details string `json:"Details" example:"Operation completed successfully"`
 }
 
 func JSON(w http.ResponseWriter, status int, data interface{}) {

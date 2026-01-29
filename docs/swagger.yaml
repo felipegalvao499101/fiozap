@@ -1,0 +1,3252 @@
+basePath: /
+definitions:
+  dto.ActionResponse:
+    properties:
+      Details:
+        example: Operation completed successfully
+        type: string
+    type: object
+  dto.ApproveParticipantsRequest:
+    properties:
+      Phone:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.AvatarResponse:
+    properties:
+      ID:
+        example: "122345678901234567890"
+        type: string
+      URL:
+        example: https://pps.whatsapp.net/...
+        type: string
+    type: object
+  dto.BlockActionResponse:
+    properties:
+      Blocklist:
+        items:
+          type: string
+        type: array
+      Details:
+        example: Contact blocked
+        type: string
+    type: object
+  dto.BlockRequest:
+    properties:
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.BlocklistResponse:
+    properties:
+      JIDs:
+        example:
+        - 5511999999999@s.whatsapp.net
+        - 5521888888888@s.whatsapp.net
+        items:
+          type: string
+        type: array
+    type: object
+  dto.BusinessProfileResponse:
+    properties:
+      Address:
+        type: string
+      Category:
+        type: string
+      Description:
+        type: string
+      Email:
+        type: string
+      JID:
+        type: string
+      Website:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.CallActionResponse:
+    properties:
+      Details:
+        example: Call rejected
+        type: string
+    type: object
+  dto.ChatActionResponse:
+    properties:
+      Details:
+        example: Messages marked as read
+        type: string
+    type: object
+  dto.ChatPresenceRequest:
+    properties:
+      Media:
+        enum:
+        - ""
+        - audio
+        example: ""
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+      State:
+        enum:
+        - composing
+        - paused
+        example: composing
+        type: string
+    type: object
+  dto.CheckPhoneRequest:
+    properties:
+      Phone:
+        example:
+        - "5511999999999"
+        - "5521888888888"
+        items:
+          type: string
+        type: array
+    type: object
+  dto.CheckPhoneResponse:
+    properties:
+      IsInWhatsapp:
+        example: true
+        type: boolean
+      JID:
+        example: 5511999999999@s.whatsapp.net
+        type: string
+      Query:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.ContactsCheckResponse:
+    properties:
+      Contacts:
+        items:
+          $ref: '#/definitions/dto.CheckPhoneResponse'
+        type: array
+    type: object
+  dto.CreateGroupRequest:
+    properties:
+      Name:
+        type: string
+      Participants:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.CreateNewsletterRequest:
+    properties:
+      Description:
+        type: string
+      Name:
+        type: string
+      Picture:
+        description: base64
+        type: string
+    type: object
+  dto.CreateSessionRequest:
+    properties:
+      Name:
+        type: string
+      Provider:
+        allOf:
+        - $ref: '#/definitions/dto.ProviderType'
+        description: '"whatsmeow" (default) ou "cloudapi"'
+    type: object
+  dto.DisappearingRequest:
+    properties:
+      Duration:
+        enum:
+        - 24h
+        - 7d
+        - 90d
+        - "off"
+        example: 24h
+        type: string
+    type: object
+  dto.EditMessageRequest:
+    properties:
+      Body:
+        example: Edited message text
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.GroupDescriptionRequest:
+    properties:
+      Topic:
+        type: string
+    type: object
+  dto.GroupMemberAddModeRequest:
+    properties:
+      Mode:
+        description: all_member_add, admin_add
+        type: string
+    type: object
+  dto.GroupNameRequest:
+    properties:
+      Name:
+        type: string
+    type: object
+  dto.GroupPhotoRequest:
+    properties:
+      Image:
+        type: string
+    type: object
+  dto.GroupResponse:
+    properties:
+      GroupCreated:
+        type: string
+      IsAnnounce:
+        type: boolean
+      IsLocked:
+        type: boolean
+      JID:
+        type: string
+      Name:
+        type: string
+      OwnerJID:
+        type: string
+      Participants:
+        items:
+          $ref: '#/definitions/dto.ParticipantResponse'
+        type: array
+      Topic:
+        type: string
+    type: object
+  dto.GroupSettingRequest:
+    properties:
+      Value:
+        type: boolean
+    type: object
+  dto.InviteLinkResponse:
+    properties:
+      InviteLink:
+        type: string
+    type: object
+  dto.JoinGroupRequest:
+    properties:
+      Code:
+        type: string
+    type: object
+  dto.LinkGroupRequest:
+    properties:
+      ChildJID:
+        type: string
+      ParentJID:
+        type: string
+    type: object
+  dto.MarkReadRequest:
+    properties:
+      ChatPhone:
+        example: "5511999999999"
+        type: string
+      Id:
+        example:
+        - ABCD1234567890
+        - EFGH0987654321
+        items:
+          type: string
+        type: array
+      SenderPhone:
+        example: "5511888888888"
+        type: string
+    type: object
+  dto.MessageResponse:
+    properties:
+      Id:
+        example: ABCD1234567890
+        type: string
+      Timestamp:
+        example: 1704067200
+        type: integer
+    type: object
+  dto.NewsletterMuteRequest:
+    properties:
+      Mute:
+        type: boolean
+    type: object
+  dto.NewsletterReactionRequest:
+    properties:
+      Reaction:
+        description: emoji ou vazio para remover
+        type: string
+      ServerID:
+        type: string
+    type: object
+  dto.ParticipantResponse:
+    properties:
+      IsAdmin:
+        type: boolean
+      IsSuperAdmin:
+        type: boolean
+      JID:
+        type: string
+    type: object
+  dto.ParticipantsRequest:
+    properties:
+      Phone:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.PresenceRequest:
+    properties:
+      Type:
+        enum:
+        - available
+        - unavailable
+        example: available
+        type: string
+    type: object
+  dto.PresenceSubscribeRequest:
+    properties:
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.ProviderType:
+    enum:
+    - whatsmeow
+    - cloudapi
+    type: string
+    x-enum-comments:
+      ProviderCloudAPI: API oficial Meta
+      ProviderWhatsmeow: default - nao-oficial
+    x-enum-descriptions:
+    - default - nao-oficial
+    - API oficial Meta
+    x-enum-varnames:
+    - ProviderWhatsmeow
+    - ProviderCloudAPI
+  dto.QRResponse:
+    properties:
+      QRCode:
+        type: string
+    type: object
+  dto.RejectCallRequest:
+    properties:
+      CallFrom:
+        example: 5511999999999@s.whatsapp.net
+        type: string
+      CallID:
+        example: ABCD1234567890
+        type: string
+    type: object
+  dto.RejectParticipantsRequest:
+    properties:
+      Phone:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.ResolveBusinessLinkRequest:
+    properties:
+      Link:
+        type: string
+    type: object
+  dto.ResolveContactQRRequest:
+    properties:
+      Link:
+        type: string
+    type: object
+  dto.Response:
+    description: Resposta padrao da API FioZap
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      error:
+        example: error message
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+  dto.RevokeMessageRequest:
+    properties:
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendAudioRequest:
+    properties:
+      Audio:
+        example: base64...
+        type: string
+      Mimetype:
+        example: audio/ogg; codecs=opus
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendContactRequest:
+    properties:
+      Name:
+        example: John Doe
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+      Vcard:
+        example: |-
+          BEGIN:VCARD
+          VERSION:3.0
+          FN:John Doe
+          TEL:+5511999999999
+          END:VCARD
+        type: string
+    type: object
+  dto.SendDocumentRequest:
+    properties:
+      Caption:
+        example: Document caption
+        type: string
+      Document:
+        example: base64...
+        type: string
+      FileName:
+        example: document.pdf
+        type: string
+      Mimetype:
+        example: application/pdf
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendImageRequest:
+    properties:
+      Caption:
+        example: Image caption
+        type: string
+      Image:
+        example: base64...
+        type: string
+      Mimetype:
+        example: image/jpeg
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendLocationRequest:
+    properties:
+      Address:
+        example: Av. Paulista, 1000
+        type: string
+      Latitude:
+        example: -23.5505
+        type: number
+      Longitude:
+        example: -46.6333
+        type: number
+      Name:
+        example: Sao Paulo
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendPollRequest:
+    properties:
+      MultiSelect:
+        example: false
+        type: boolean
+      Options:
+        example:
+        - Red
+        - Blue
+        - Green
+        items:
+          type: string
+        type: array
+      Phone:
+        example: "5511999999999"
+        type: string
+      Question:
+        example: What is your favorite color?
+        type: string
+    type: object
+  dto.SendReactionRequest:
+    properties:
+      Body:
+        example: "\U0001F44D"
+        type: string
+      Id:
+        example: ABCD1234567890
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendStickerRequest:
+    properties:
+      Mimetype:
+        example: image/webp
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+      Sticker:
+        example: base64...
+        type: string
+    type: object
+  dto.SendTextRequest:
+    properties:
+      Body:
+        example: Hello World!
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+    type: object
+  dto.SendVideoRequest:
+    properties:
+      Caption:
+        example: Video caption
+        type: string
+      Mimetype:
+        example: video/mp4
+        type: string
+      Phone:
+        example: "5511999999999"
+        type: string
+      Video:
+        example: base64...
+        type: string
+    type: object
+  dto.SessionResponse:
+    properties:
+      Connected:
+        type: boolean
+      JID:
+        type: string
+      Name:
+        type: string
+      Phone:
+        type: string
+      Provider:
+        $ref: '#/definitions/dto.ProviderType'
+      PushName:
+        type: string
+      Token:
+        type: string
+    type: object
+  dto.SetPrivacyRequest:
+    properties:
+      Name:
+        description: groupAdd, lastSeen, status, profile, readReceipts, callAdd, online
+        type: string
+      Value:
+        description: all, contacts, contact_blacklist, none, known, match_last_seen
+        type: string
+    type: object
+  dto.SetStatusMessageRequest:
+    properties:
+      Status:
+        type: string
+    type: object
+  dto.UserInfoResponse:
+    properties:
+      Devices:
+        items:
+          type: string
+        type: array
+      JID:
+        example: 5511999999999@s.whatsapp.net
+        type: string
+      PictureID:
+        type: string
+      Status:
+        example: Hey there! I am using WhatsApp.
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: FioZap Support
+    url: https://github.com/fiozap/fiozap
+  description: API REST multi-session para WhatsApp usando whatsmeow. Baseada na WuzAPI
+    com campos JSON em PascalCase.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: FioZap API
+  version: "1.0"
+paths:
+  /sessions:
+    get:
+      description: Lista todas as sessoes WhatsApp criadas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.SessionResponse'
+                  type: array
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Listar sessoes
+      tags:
+      - sessions
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova sessao WhatsApp com o nome informado
+      parameters:
+      - description: Nome da sessao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SessionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Criar sessao
+      tags:
+      - sessions
+  /sessions/{name}:
+    delete:
+      description: Remove sessao e todos os dados associados
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Deletar sessao
+      tags:
+      - sessions
+    get:
+      description: Retorna informacoes de uma sessao especifica
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SessionResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter sessao
+      tags:
+      - sessions
+  /sessions/{name}/blocklist:
+    get:
+      description: Retorna lista de contatos bloqueados
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BlocklistResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Listar bloqueados
+      tags:
+      - blocklist
+  /sessions/{name}/blocklist/block:
+    post:
+      consumes:
+      - application/json
+      description: Adiciona contato a lista de bloqueados
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero a bloquear
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BlockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BlockActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Bloquear contato
+      tags:
+      - blocklist
+  /sessions/{name}/blocklist/unblock:
+    post:
+      consumes:
+      - application/json
+      description: Remove contato da lista de bloqueados
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero a desbloquear
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BlockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BlockActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Desbloquear contato
+      tags:
+      - blocklist
+  /sessions/{name}/calls/reject:
+    post:
+      consumes:
+      - application/json
+      description: Rejeita uma chamada recebida
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da chamada
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RejectCallRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.CallActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Rejeitar chamada
+      tags:
+      - calls
+  /sessions/{name}/chat/{chatJid}/disappearing:
+    put:
+      consumes:
+      - application/json
+      description: Define tempo de expiracao das mensagens no chat
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do chat
+        in: path
+        name: chatJid
+        required: true
+        type: string
+      - description: Duracao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.DisappearingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Configurar mensagens temporarias
+      tags:
+      - chat
+  /sessions/{name}/chat/markread:
+    post:
+      consumes:
+      - application/json
+      description: Marca mensagens como lidas
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: IDs das mensagens
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MarkReadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Marcar como lida
+      tags:
+      - chat
+  /sessions/{name}/chat/presence:
+    post:
+      consumes:
+      - application/json
+      description: Envia presenca de digitando/gravando audio para um chat
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da presenca
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ChatPresenceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar presenca no chat
+      tags:
+      - chat
+  /sessions/{name}/community/{communityJid}/participants:
+    get:
+      description: Lista participantes de uma comunidade (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID da comunidade
+        in: path
+        name: communityJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Participantes da comunidade
+      tags:
+      - community
+  /sessions/{name}/community/{communityJid}/subgroups:
+    get:
+      description: Lista subgrupos de uma comunidade (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID da comunidade
+        in: path
+        name: communityJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Listar subgrupos
+      tags:
+      - community
+  /sessions/{name}/community/link:
+    post:
+      consumes:
+      - application/json
+      description: Vincula um grupo a uma comunidade (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do vinculo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LinkGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Vincular grupo a comunidade
+      tags:
+      - community
+  /sessions/{name}/community/unlink:
+    post:
+      consumes:
+      - application/json
+      description: Desvincula um grupo de uma comunidade (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do vinculo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LinkGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Desvincular grupo de comunidade
+      tags:
+      - community
+  /sessions/{name}/connect:
+    post:
+      description: Inicia conexao da sessao com WhatsApp (gera QR code se necessario)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SessionResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Conectar sessao
+      tags:
+      - sessions
+  /sessions/{name}/contacts/{phone}:
+    get:
+      description: Retorna informacoes de um contato (status, foto, devices)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero do telefone
+        in: path
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserInfoResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter info do contato
+      tags:
+      - contacts
+  /sessions/{name}/contacts/{phone}/avatar:
+    get:
+      description: Retorna URL da foto de perfil do contato
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero do telefone
+        in: path
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AvatarResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter foto de perfil
+      tags:
+      - contacts
+  /sessions/{name}/contacts/{phone}/business:
+    get:
+      description: Retorna perfil comercial do contato (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero do telefone
+        in: path
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BusinessProfileResponse'
+              type: object
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter perfil comercial
+      tags:
+      - contacts
+  /sessions/{name}/contacts/check:
+    post:
+      consumes:
+      - application/json
+      description: Verifica se os numeros informados estao no WhatsApp
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPhoneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ContactsCheckResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Verificar numeros
+      tags:
+      - contacts
+  /sessions/{name}/disconnect:
+    post:
+      description: Desconecta a sessao do WhatsApp (mantem dados)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SessionResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Desconectar sessao
+      tags:
+      - sessions
+  /sessions/{name}/groups:
+    get:
+      description: Lista todos os grupos da sessao
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.GroupResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Listar grupos
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo grupo WhatsApp
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do grupo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GroupResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Criar grupo
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}:
+    get:
+      description: Retorna informacoes de um grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GroupResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter grupo
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/invite:
+    get:
+      description: Retorna link de convite do grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.InviteLinkResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter link de convite
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/invite/revoke:
+    post:
+      description: Revoga e gera novo link de convite
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.InviteLinkResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Revogar link de convite
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/leave:
+    post:
+      description: Sai de um grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Sair do grupo
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/name:
+    put:
+      consumes:
+      - application/json
+      description: Altera o nome de um grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Novo nome
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Alterar nome do grupo
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/participants:
+    delete:
+      consumes:
+      - application/json
+      description: Remove participantes do grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Remover participantes
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Adiciona participantes ao grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Adicionar participantes
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/participants/demote:
+    post:
+      consumes:
+      - application/json
+      description: Rebaixa administradores a participantes comuns
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Rebaixar participantes
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/participants/promote:
+    post:
+      consumes:
+      - application/json
+      description: Promove participantes a administradores
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Promover participantes
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/photo:
+    put:
+      consumes:
+      - application/json
+      description: Altera a foto de um grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Imagem base64
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupPhotoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Alterar foto do grupo
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/requests:
+    get:
+      description: Lista solicitacoes de entrada no grupo (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Listar solicitacoes
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/requests/approve:
+    post:
+      consumes:
+      - application/json
+      description: Aprova solicitacoes de entrada no grupo (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ApproveParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Aprovar solicitacoes
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/requests/reject:
+    post:
+      consumes:
+      - application/json
+      description: Rejeita solicitacoes de entrada no grupo (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Lista de numeros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RejectParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Rejeitar solicitacoes
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/settings/announce:
+    put:
+      consumes:
+      - application/json
+      description: Define se apenas admins podem enviar mensagens
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Valor
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupSettingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Modo somente admins
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/settings/approval:
+    put:
+      consumes:
+      - application/json
+      description: Define se novos membros precisam de aprovacao (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Valor
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupSettingRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Modo aprovacao
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/settings/locked:
+    put:
+      consumes:
+      - application/json
+      description: Define se apenas admins podem editar info do grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Valor
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupSettingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Bloquear edicao de info
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/settings/memberadd:
+    put:
+      consumes:
+      - application/json
+      description: Define quem pode adicionar membros (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Modo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupMemberAddModeRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Modo adicao de membros
+      tags:
+      - groups
+  /sessions/{name}/groups/{groupJid}/topic:
+    put:
+      consumes:
+      - application/json
+      description: Altera a descricao/topico de um grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do grupo
+        in: path
+        name: groupJid
+        required: true
+        type: string
+      - description: Nova descricao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GroupDescriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Alterar descricao do grupo
+      tags:
+      - groups
+  /sessions/{name}/groups/invite/{code}:
+    get:
+      description: Retorna informacoes do grupo pelo codigo de convite
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Codigo do convite
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GroupResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Info do convite
+      tags:
+      - groups
+  /sessions/{name}/groups/join:
+    post:
+      consumes:
+      - application/json
+      description: Entra em um grupo usando codigo de convite
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Codigo do convite
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.JoinGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Entrar no grupo
+      tags:
+      - groups
+  /sessions/{name}/logout:
+    post:
+      description: Faz logout da sessao (requer novo QR code para reconectar)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ActionResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Logout da sessao
+      tags:
+      - sessions
+  /sessions/{name}/messages/{messageId}:
+    delete:
+      consumes:
+      - application/json
+      description: Revoga/deleta uma mensagem enviada
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: ID da mensagem
+        in: path
+        name: messageId
+        required: true
+        type: string
+      - description: Dados do contato
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RevokeMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Revogar mensagem
+      tags:
+      - messages
+    put:
+      consumes:
+      - application/json
+      description: Edita uma mensagem enviada
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: ID da mensagem
+        in: path
+        name: messageId
+        required: true
+        type: string
+      - description: Novo conteudo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EditMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Editar mensagem
+      tags:
+      - messages
+  /sessions/{name}/messages/audio:
+    post:
+      consumes:
+      - application/json
+      description: Envia audio (base64) para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do audio
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendAudioRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar audio
+      tags:
+      - messages
+  /sessions/{name}/messages/contact:
+    post:
+      consumes:
+      - application/json
+      description: Envia contato (vCard) para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do contato
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendContactRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar contato
+      tags:
+      - messages
+  /sessions/{name}/messages/document:
+    post:
+      consumes:
+      - application/json
+      description: Envia documento (base64) para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do documento
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendDocumentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar documento
+      tags:
+      - messages
+  /sessions/{name}/messages/image:
+    post:
+      consumes:
+      - application/json
+      description: Envia imagem (base64) para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da imagem
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendImageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar imagem
+      tags:
+      - messages
+  /sessions/{name}/messages/location:
+    post:
+      consumes:
+      - application/json
+      description: Envia localizacao para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da localizacao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar localizacao
+      tags:
+      - messages
+  /sessions/{name}/messages/poll:
+    post:
+      consumes:
+      - application/json
+      description: Envia enquete para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da enquete
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendPollRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar enquete
+      tags:
+      - messages
+  /sessions/{name}/messages/reaction:
+    post:
+      consumes:
+      - application/json
+      description: Envia reacao (emoji) para uma mensagem
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da reacao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendReactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar reacao
+      tags:
+      - messages
+  /sessions/{name}/messages/sticker:
+    post:
+      consumes:
+      - application/json
+      description: Envia sticker (base64) para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do sticker
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendStickerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar sticker
+      tags:
+      - messages
+  /sessions/{name}/messages/text:
+    post:
+      consumes:
+      - application/json
+      description: Envia mensagem de texto para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados da mensagem
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendTextRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar texto
+      tags:
+      - messages
+  /sessions/{name}/messages/video:
+    post:
+      consumes:
+      - application/json
+      description: Envia video (base64) para um contato ou grupo
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do video
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendVideoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.MessageResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar video
+      tags:
+      - messages
+  /sessions/{name}/newsletters:
+    get:
+      description: Lista canais que a sessao segue (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Listar canais
+      tags:
+      - newsletters
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo canal/newsletter (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Dados do canal
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateNewsletterRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Criar canal
+      tags:
+      - newsletters
+  /sessions/{name}/newsletters/{newsletterJid}:
+    get:
+      description: Retorna informacoes de um canal (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do canal
+        in: path
+        name: newsletterJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter canal
+      tags:
+      - newsletters
+  /sessions/{name}/newsletters/{newsletterJid}/follow:
+    post:
+      description: Segue um canal (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do canal
+        in: path
+        name: newsletterJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Seguir canal
+      tags:
+      - newsletters
+  /sessions/{name}/newsletters/{newsletterJid}/mute:
+    put:
+      consumes:
+      - application/json
+      description: Ativa/desativa notificacoes do canal (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do canal
+        in: path
+        name: newsletterJid
+        required: true
+        type: string
+      - description: Estado mute
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewsletterMuteRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Silenciar canal
+      tags:
+      - newsletters
+  /sessions/{name}/newsletters/{newsletterJid}/reaction:
+    post:
+      consumes:
+      - application/json
+      description: Envia reacao em mensagem do canal (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do canal
+        in: path
+        name: newsletterJid
+        required: true
+        type: string
+      - description: Dados da reacao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.NewsletterReactionRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Reagir em mensagem
+      tags:
+      - newsletters
+  /sessions/{name}/newsletters/{newsletterJid}/unfollow:
+    post:
+      description: Deixa de seguir um canal (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: JID do canal
+        in: path
+        name: newsletterJid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Deixar de seguir
+      tags:
+      - newsletters
+  /sessions/{name}/presence:
+    post:
+      consumes:
+      - application/json
+      description: Define status online/offline da sessao
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Tipo de presenca
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PresenceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Enviar presenca global
+      tags:
+      - presence
+  /sessions/{name}/presence/subscribe:
+    post:
+      consumes:
+      - application/json
+      description: Se inscreve para receber atualizacoes de presenca de um contato
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero do contato
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PresenceSubscribeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ChatActionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Inscrever em presenca
+      tags:
+      - presence
+  /sessions/{name}/privacy:
+    get:
+      description: Retorna configuracoes de privacidade da sessao (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter configuracoes de privacidade
+      tags:
+      - privacy
+    put:
+      consumes:
+      - application/json
+      description: Altera uma configuracao de privacidade (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Configuracao
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetPrivacyRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Alterar privacidade
+      tags:
+      - privacy
+  /sessions/{name}/privacy/status:
+    get:
+      description: Retorna configuracoes de privacidade do status (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Privacidade do status
+      tags:
+      - privacy
+  /sessions/{name}/profile/business/resolve:
+    post:
+      consumes:
+      - application/json
+      description: Resolve um link de mensagem comercial (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Link
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResolveBusinessLinkRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Resolver link comercial
+      tags:
+      - profile
+  /sessions/{name}/profile/qrlink:
+    get:
+      description: Retorna link QR para adicionar contato (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter QR link de contato
+      tags:
+      - profile
+  /sessions/{name}/profile/qrlink/resolve:
+    post:
+      consumes:
+      - application/json
+      description: Resolve um link QR de contato (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Link QR
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ResolveContactQRRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Resolver QR link
+      tags:
+      - profile
+  /sessions/{name}/profile/status:
+    put:
+      consumes:
+      - application/json
+      description: Altera o recado/status do perfil (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Novo status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SetStatusMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Alterar recado
+      tags:
+      - profile
+  /sessions/{name}/qr:
+    get:
+      description: Retorna QR code para autenticacao. Use ?format=image para PNG
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: 'Formato: image para PNG'
+        enum:
+        - image
+        in: query
+        name: format
+        type: string
+      produces:
+      - application/json
+      - image/png
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dto.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.QRResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Obter QR code
+      tags:
+      - sessions
+  /sessions/{name}/users/{phone}/business:
+    get:
+      description: Retorna perfil comercial de um contato (nao implementado)
+      parameters:
+      - description: Nome da sessao
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: Numero do telefone
+        in: path
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/dto.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Perfil comercial
+      tags:
+      - profile
+securityDefinitions:
+  ApiKeyAuth:
+    description: Token global (GLOBAL_API_TOKEN) ou token da sessao
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

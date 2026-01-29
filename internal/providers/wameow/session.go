@@ -1,4 +1,4 @@
-package zap
+package wameow
 
 import (
 	"sync"
@@ -7,43 +7,42 @@ import (
 	"go.mau.fi/whatsmeow/store"
 )
 
+// Session representa uma sessao WhatsApp
 type Session struct {
 	Name      string
 	Token     string
 	Client    *whatsmeow.Client
 	Device    *store.Device
-	Connected bool
-	QRCode    string
+	connected bool
+	qrCode    string
 	mu        sync.RWMutex
 }
 
 func (s *Session) IsConnected() bool {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return s.Connected
+	return s.connected
 }
 
-func (s *Session) SetConnected(connected bool) {
+func (s *Session) setConnected(v bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.Connected = connected
+	s.connected = v
 }
 
 func (s *Session) GetQRCode() string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return s.QRCode
+	return s.qrCode
 }
 
-func (s *Session) SetQRCode(qr string) {
+func (s *Session) setQRCode(qr string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.QRCode = qr
+	s.qrCode = qr
 }
 
 func (s *Session) GetPhone() string {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
 	if s.Client != nil && s.Client.Store.ID != nil {
 		return s.Client.Store.ID.User
 	}
@@ -51,8 +50,6 @@ func (s *Session) GetPhone() string {
 }
 
 func (s *Session) GetPushName() string {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
 	if s.Client != nil && s.Client.Store.ID != nil {
 		return s.Client.Store.PushName
 	}
@@ -60,10 +57,16 @@ func (s *Session) GetPushName() string {
 }
 
 func (s *Session) GetJID() string {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
 	if s.Client != nil && s.Client.Store.ID != nil {
 		return s.Client.Store.ID.String()
 	}
 	return ""
+}
+
+func (s *Session) GetToken() string {
+	return s.Token
+}
+
+func (s *Session) GetName() string {
+	return s.Name
 }
