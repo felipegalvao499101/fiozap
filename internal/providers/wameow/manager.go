@@ -5,10 +5,12 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"sync"
 
 	"fiozap/internal/domain"
 
+	"github.com/mdp/qrterminal/v3"
 	"github.com/rs/zerolog"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
@@ -152,6 +154,15 @@ func (m *Manager) handleQR(session *Session, qrChan <-chan whatsmeow.QRChannelIt
 		if evt.Event == "code" {
 			session.setQRCode(evt.Code)
 			m.log.Info().Str("name", session.Name).Msg("QR code received")
+			fmt.Printf("\n=== QR Code for session '%s' ===\n", session.Name)
+			qrterminal.GenerateWithConfig(evt.Code, qrterminal.Config{
+				Level:     qrterminal.L,
+				Writer:    os.Stdout,
+				BlackChar: qrterminal.BLACK,
+				WhiteChar: qrterminal.WHITE,
+				QuietZone: 1,
+			})
+			fmt.Println("================================")
 		}
 	}
 }

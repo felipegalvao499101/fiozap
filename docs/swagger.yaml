@@ -564,7 +564,6 @@ definitions:
         example: Hey there! I am using WhatsApp.
         type: string
     type: object
-host: localhost:8080
 info:
   contact:
     name: FioZap Support

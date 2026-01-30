@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"fiozap/docs"
 	"fiozap/internal/api/auth"
 	"fiozap/internal/api/handlers"
 	"fiozap/internal/domain"
@@ -40,8 +41,26 @@ func New(provider domain.Provider, logger zerolog.Logger, globalToken string) ht
 		_, _ = w.Write([]byte(`{"status":"ok"}`))
 	})
 
-	// Swagger
-	r.Get("/swagger/*", httpSwagger.WrapHandler)
+	// Swagger with dynamic host
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+		httpSwagger.BeforeScript(`
+			window.onload = function() {
+				const url = new URL(window.location.href);
+				window.ui.getConfigs().spec.host = url.host;
+			}
+		`),
+		httpSwagger.Plugins([]string{}),
+		httpSwagger.UIConfig(map[string]string{
+			"persistAuthorization": "true",
+		}),
+	))
+	r.Get("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		docs.SwaggerInfo.Host = r.Host
+		w.Header().Set("Content-Type", "application/json")
+		doc := docs.SwaggerInfo.ReadDoc()
+		_, _ = w.Write([]byte(doc))
+	})
 
 	r.Route("/sessions", func(r chi.Router) {
 		r.With(authMiddleware.Global).Post("/", sessionHandler.Create)
