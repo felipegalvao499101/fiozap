@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"strings"
 
 	"fiozap/internal/api/dto"
+	"fiozap/internal/api/utils"
 	"fiozap/internal/domain"
 
 	"github.com/go-chi/chi/v5"
@@ -57,12 +57,15 @@ func (h *MessageHandler) SendText(w http.ResponseWriter, r *http.Request) {
 
 // SendImage godoc
 // @Summary      Enviar imagem
-// @Description  Envia imagem (base64) para um contato ou grupo
+// @Description  Envia imagem para um contato ou grupo. Aceita base64, data URL ou URL publica
 // @Tags         messages
-// @Accept       json
+// @Accept       json,multipart/form-data
 // @Produce      json
 // @Param        name path string true "Nome da sessao"
-// @Param        request body dto.SendImageRequest true "Dados da imagem"
+// @Param        request body dto.SendImageRequest true "Dados da imagem (JSON)"
+// @Param        Phone formData string false "Numero do destinatario (form-data)"
+// @Param        Caption formData string false "Legenda da imagem (form-data)"
+// @Param        file formData file false "Arquivo de imagem (form-data)"
 // @Success      200 {object} dto.Response{data=dto.MessageResponse}
 // @Failure      400 {object} dto.Response
 // @Failure      500 {object} dto.Response
@@ -70,29 +73,62 @@ func (h *MessageHandler) SendText(w http.ResponseWriter, r *http.Request) {
 // @Router       /sessions/{name}/messages/image [post]
 func (h *MessageHandler) SendImage(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
-	var req dto.SendImageRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode Payload")
-		return
+
+	var phone, caption, mimeType string
+	var mediaData []byte
+
+	contentType := r.Header.Get("Content-Type")
+
+	// Verifica se é multipart/form-data
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := r.ParseMultipartForm(50 << 20); err != nil { // 50MB max
+			dto.Error(w, http.StatusBadRequest, "failed to parse multipart form")
+			return
+		}
+
+		phone = r.FormValue("Phone")
+		caption = r.FormValue("Caption")
+
+		media, err := utils.ProcessFormFile(r, "file")
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		mimeType = media.MimeType
+	} else {
+		// JSON request
+		var req dto.SendImageRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			dto.Error(w, http.StatusBadRequest, "could not decode Payload")
+			return
+		}
+
+		phone = req.Phone
+		caption = req.Caption
+		mimeType = req.MimeType
+
+		media, err := utils.ProcessMedia(req.Image, req.MimeType)
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		if mimeType == "" {
+			mimeType = media.MimeType
+		}
 	}
 
-	if req.Phone == "" {
+	if phone == "" {
 		dto.Error(w, http.StatusBadRequest, "missing Phone in Payload")
 		return
 	}
 
-	data, err := decodeBase64Data(req.Image)
-	if err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode base64 encoded data from payload")
-		return
-	}
-
-	mimeType := req.MimeType
 	if mimeType == "" {
 		mimeType = "image/jpeg"
 	}
 
-	msgId, err := h.provider.SendImage(r.Context(), name, req.Phone, data, req.Caption, mimeType)
+	msgId, err := h.provider.SendImage(r.Context(), name, phone, mediaData, caption, mimeType)
 	if err != nil {
 		dto.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -103,12 +139,15 @@ func (h *MessageHandler) SendImage(w http.ResponseWriter, r *http.Request) {
 
 // SendVideo godoc
 // @Summary      Enviar video
-// @Description  Envia video (base64) para um contato ou grupo
+// @Description  Envia video para um contato ou grupo. Aceita base64, data URL ou URL publica
 // @Tags         messages
-// @Accept       json
+// @Accept       json,multipart/form-data
 // @Produce      json
 // @Param        name path string true "Nome da sessao"
-// @Param        request body dto.SendVideoRequest true "Dados do video"
+// @Param        request body dto.SendVideoRequest true "Dados do video (JSON)"
+// @Param        Phone formData string false "Numero do destinatario (form-data)"
+// @Param        Caption formData string false "Legenda do video (form-data)"
+// @Param        file formData file false "Arquivo de video (form-data)"
 // @Success      200 {object} dto.Response{data=dto.MessageResponse}
 // @Failure      400 {object} dto.Response
 // @Failure      500 {object} dto.Response
@@ -116,29 +155,60 @@ func (h *MessageHandler) SendImage(w http.ResponseWriter, r *http.Request) {
 // @Router       /sessions/{name}/messages/video [post]
 func (h *MessageHandler) SendVideo(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
-	var req dto.SendVideoRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode Payload")
-		return
+
+	var phone, caption, mimeType string
+	var mediaData []byte
+
+	contentType := r.Header.Get("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := r.ParseMultipartForm(100 << 20); err != nil { // 100MB max
+			dto.Error(w, http.StatusBadRequest, "failed to parse multipart form")
+			return
+		}
+
+		phone = r.FormValue("Phone")
+		caption = r.FormValue("Caption")
+
+		media, err := utils.ProcessFormFile(r, "file")
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		mimeType = media.MimeType
+	} else {
+		var req dto.SendVideoRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			dto.Error(w, http.StatusBadRequest, "could not decode Payload")
+			return
+		}
+
+		phone = req.Phone
+		caption = req.Caption
+		mimeType = req.MimeType
+
+		media, err := utils.ProcessMedia(req.Video, req.MimeType)
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		if mimeType == "" {
+			mimeType = media.MimeType
+		}
 	}
 
-	if req.Phone == "" {
+	if phone == "" {
 		dto.Error(w, http.StatusBadRequest, "missing Phone in Payload")
 		return
 	}
 
-	data, err := decodeBase64Data(req.Video)
-	if err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode base64 encoded data from payload")
-		return
-	}
-
-	mimeType := req.MimeType
 	if mimeType == "" {
 		mimeType = "video/mp4"
 	}
 
-	msgId, err := h.provider.SendVideo(r.Context(), name, req.Phone, data, req.Caption, mimeType)
+	msgId, err := h.provider.SendVideo(r.Context(), name, phone, mediaData, caption, mimeType)
 	if err != nil {
 		dto.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -149,12 +219,15 @@ func (h *MessageHandler) SendVideo(w http.ResponseWriter, r *http.Request) {
 
 // SendDocument godoc
 // @Summary      Enviar documento
-// @Description  Envia documento (base64) para um contato ou grupo
+// @Description  Envia documento para um contato ou grupo. Aceita base64, data URL ou URL publica
 // @Tags         messages
-// @Accept       json
+// @Accept       json,multipart/form-data
 // @Produce      json
 // @Param        name path string true "Nome da sessao"
-// @Param        request body dto.SendDocumentRequest true "Dados do documento"
+// @Param        request body dto.SendDocumentRequest true "Dados do documento (JSON)"
+// @Param        Phone formData string false "Numero do destinatario (form-data)"
+// @Param        FileName formData string false "Nome do arquivo (form-data)"
+// @Param        file formData file false "Arquivo (form-data)"
 // @Success      200 {object} dto.Response{data=dto.MessageResponse}
 // @Failure      400 {object} dto.Response
 // @Failure      500 {object} dto.Response
@@ -162,34 +235,71 @@ func (h *MessageHandler) SendVideo(w http.ResponseWriter, r *http.Request) {
 // @Router       /sessions/{name}/messages/document [post]
 func (h *MessageHandler) SendDocument(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
-	var req dto.SendDocumentRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode Payload")
-		return
+
+	var phone, fileName, mimeType string
+	var mediaData []byte
+
+	contentType := r.Header.Get("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := r.ParseMultipartForm(100 << 20); err != nil { // 100MB max
+			dto.Error(w, http.StatusBadRequest, "failed to parse multipart form")
+			return
+		}
+
+		phone = r.FormValue("Phone")
+		fileName = r.FormValue("FileName")
+
+		media, err := utils.ProcessFormFile(r, "file")
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		mimeType = media.MimeType
+		if fileName == "" {
+			fileName = media.FileName
+		}
+	} else {
+		var req dto.SendDocumentRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			dto.Error(w, http.StatusBadRequest, "could not decode Payload")
+			return
+		}
+
+		phone = req.Phone
+		fileName = req.FileName
+		mimeType = req.MimeType
+
+		media, err := utils.ProcessMedia(req.Document, req.MimeType)
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		if mimeType == "" {
+			mimeType = media.MimeType
+		}
+		if fileName == "" && media.FileName != "" {
+			fileName = media.FileName
+		}
 	}
 
-	if req.Phone == "" {
+	if phone == "" {
 		dto.Error(w, http.StatusBadRequest, "missing Phone in Payload")
 		return
 	}
 
-	if req.FileName == "" {
+	if fileName == "" {
 		dto.Error(w, http.StatusBadRequest, "missing FileName in Payload")
 		return
 	}
 
-	data, err := decodeBase64Data(req.Document)
-	if err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode base64 encoded data from payload")
-		return
-	}
-
-	mimeType := req.MimeType
 	if mimeType == "" {
 		mimeType = "application/octet-stream"
 	}
 
-	msgId, err := h.provider.SendDocument(r.Context(), name, req.Phone, data, req.FileName, mimeType)
+	msgId, err := h.provider.SendDocument(r.Context(), name, phone, mediaData, fileName, mimeType)
 	if err != nil {
 		dto.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -200,12 +310,14 @@ func (h *MessageHandler) SendDocument(w http.ResponseWriter, r *http.Request) {
 
 // SendAudio godoc
 // @Summary      Enviar audio
-// @Description  Envia audio (base64) para um contato ou grupo
+// @Description  Envia audio para um contato ou grupo. Aceita base64, data URL ou URL publica
 // @Tags         messages
-// @Accept       json
+// @Accept       json,multipart/form-data
 // @Produce      json
 // @Param        name path string true "Nome da sessao"
-// @Param        request body dto.SendAudioRequest true "Dados do audio"
+// @Param        request body dto.SendAudioRequest true "Dados do audio (JSON)"
+// @Param        Phone formData string false "Numero do destinatario (form-data)"
+// @Param        file formData file false "Arquivo de audio (form-data)"
 // @Success      200 {object} dto.Response{data=dto.MessageResponse}
 // @Failure      400 {object} dto.Response
 // @Failure      500 {object} dto.Response
@@ -213,29 +325,58 @@ func (h *MessageHandler) SendDocument(w http.ResponseWriter, r *http.Request) {
 // @Router       /sessions/{name}/messages/audio [post]
 func (h *MessageHandler) SendAudio(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
-	var req dto.SendAudioRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode Payload")
-		return
+
+	var phone, mimeType string
+	var mediaData []byte
+
+	contentType := r.Header.Get("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := r.ParseMultipartForm(50 << 20); err != nil { // 50MB max
+			dto.Error(w, http.StatusBadRequest, "failed to parse multipart form")
+			return
+		}
+
+		phone = r.FormValue("Phone")
+
+		media, err := utils.ProcessFormFile(r, "file")
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		mimeType = media.MimeType
+	} else {
+		var req dto.SendAudioRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			dto.Error(w, http.StatusBadRequest, "could not decode Payload")
+			return
+		}
+
+		phone = req.Phone
+		mimeType = req.MimeType
+
+		media, err := utils.ProcessMedia(req.Audio, req.MimeType)
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		if mimeType == "" {
+			mimeType = media.MimeType
+		}
 	}
 
-	if req.Phone == "" {
+	if phone == "" {
 		dto.Error(w, http.StatusBadRequest, "missing Phone in Payload")
 		return
 	}
 
-	data, err := decodeBase64Data(req.Audio)
-	if err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode base64 encoded data from payload")
-		return
-	}
-
-	mimeType := req.MimeType
 	if mimeType == "" {
 		mimeType = "audio/ogg; codecs=opus"
 	}
 
-	msgId, err := h.provider.SendAudio(r.Context(), name, req.Phone, data, mimeType)
+	msgId, err := h.provider.SendAudio(r.Context(), name, phone, mediaData, mimeType)
 	if err != nil {
 		dto.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -246,12 +387,14 @@ func (h *MessageHandler) SendAudio(w http.ResponseWriter, r *http.Request) {
 
 // SendSticker godoc
 // @Summary      Enviar sticker
-// @Description  Envia sticker (base64) para um contato ou grupo
+// @Description  Envia sticker para um contato ou grupo. Aceita base64, data URL ou URL publica
 // @Tags         messages
-// @Accept       json
+// @Accept       json,multipart/form-data
 // @Produce      json
 // @Param        name path string true "Nome da sessao"
-// @Param        request body dto.SendStickerRequest true "Dados do sticker"
+// @Param        request body dto.SendStickerRequest true "Dados do sticker (JSON)"
+// @Param        Phone formData string false "Numero do destinatario (form-data)"
+// @Param        file formData file false "Arquivo de sticker (form-data)"
 // @Success      200 {object} dto.Response{data=dto.MessageResponse}
 // @Failure      400 {object} dto.Response
 // @Failure      500 {object} dto.Response
@@ -259,29 +402,58 @@ func (h *MessageHandler) SendAudio(w http.ResponseWriter, r *http.Request) {
 // @Router       /sessions/{name}/messages/sticker [post]
 func (h *MessageHandler) SendSticker(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
-	var req dto.SendStickerRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode Payload")
-		return
+
+	var phone, mimeType string
+	var mediaData []byte
+
+	contentType := r.Header.Get("Content-Type")
+
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		if err := r.ParseMultipartForm(10 << 20); err != nil { // 10MB max
+			dto.Error(w, http.StatusBadRequest, "failed to parse multipart form")
+			return
+		}
+
+		phone = r.FormValue("Phone")
+
+		media, err := utils.ProcessFormFile(r, "file")
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		mimeType = media.MimeType
+	} else {
+		var req dto.SendStickerRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			dto.Error(w, http.StatusBadRequest, "could not decode Payload")
+			return
+		}
+
+		phone = req.Phone
+		mimeType = req.MimeType
+
+		media, err := utils.ProcessMedia(req.Sticker, req.MimeType)
+		if err != nil {
+			dto.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		mediaData = media.Data
+		if mimeType == "" {
+			mimeType = media.MimeType
+		}
 	}
 
-	if req.Phone == "" {
+	if phone == "" {
 		dto.Error(w, http.StatusBadRequest, "missing Phone in Payload")
 		return
 	}
 
-	data, err := decodeBase64Data(req.Sticker)
-	if err != nil {
-		dto.Error(w, http.StatusBadRequest, "could not decode base64 encoded data from payload")
-		return
-	}
-
-	mimeType := req.MimeType
 	if mimeType == "" {
 		mimeType = "image/webp"
 	}
 
-	msgId, err := h.provider.SendSticker(r.Context(), name, req.Phone, data, mimeType)
+	msgId, err := h.provider.SendSticker(r.Context(), name, phone, mediaData, mimeType)
 	if err != nil {
 		dto.Error(w, http.StatusInternalServerError, err.Error())
 		return
@@ -514,14 +686,4 @@ func (h *MessageHandler) Revoke(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dto.Success(w, dto.MessageResponse{MessageId: msgId.ID})
-}
-
-func decodeBase64Data(data string) ([]byte, error) {
-	if strings.Contains(data, ",") {
-		parts := strings.SplitN(data, ",", 2)
-		if len(parts) == 2 {
-			data = parts[1]
-		}
-	}
-	return base64.StdEncoding.DecodeString(data)
 }
