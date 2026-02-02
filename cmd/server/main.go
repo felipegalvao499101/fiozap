@@ -14,6 +14,7 @@ import (
 	"fiozap/internal/database"
 	"fiozap/internal/logger"
 	"fiozap/internal/providers/wameow"
+	"fiozap/internal/repository"
 
 	_ "fiozap/docs"
 )
@@ -49,7 +50,8 @@ func main() {
 	defer func() { _ = db.Close() }()
 	log.Info().Msg("Connected to database")
 
-	provider := wameow.New(db.Container, log)
+	repos := repository.New(db.DB)
+	provider := wameow.New(db.Container, repos.Session, log)
 
 	addr := fmt.Sprintf("%s:%s", cfg.ServerHost, cfg.ServerPort)
 	server := &http.Server{

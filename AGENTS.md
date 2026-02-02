@@ -39,13 +39,14 @@ fiozap/
 │   │   ├── handlers/        → HTTP handlers
 │   │   └── router/          → Configuracao de rotas Chi
 │   ├── config/              → Configuracao via env vars
-│   ├── database/            → PostgreSQL + migrations
+│   ├── database/            → PostgreSQL + migrations + whatsmeow container
 │   │   └── upgrades/        → SQL migrations
 │   ├── domain/              → Interfaces e tipos compartilhados
 │   ├── integrations/        → Integracoes externas
 │   │   ├── chatwoot/        → Integracao Chatwoot (futuro)
 │   │   └── webhook/         → Dispatcher de webhooks (futuro)
 │   ├── logger/              → zerolog + whatsmeow adapter
+│   ├── repository/          → Camada de persistencia (Repository Pattern)
 │   └── providers/           → Implementacoes de mensageria
 │       └── wameow/          → Provider whatsmeow (nao-oficial)
 ├── docker-compose.yml       → Postgres, Redis, NATS, Chatwoot
@@ -107,6 +108,34 @@ Handlers HTTP organizados por dominio:
 | **NewsletterHandler** | `newsletter.go` | Canais (not implemented) |
 | **PrivacyHandler** | `privacy.go` | Privacidade (not implemented) |
 | **ProfileHandler** | `profile.go` | Perfil (not implemented) |
+
+### Repository Layer (`internal/repository/`)
+
+Camada de persistencia usando Repository Pattern para desacoplar acesso ao banco.
+
+**Arquivos:**
+- `repository.go` - Agregador `Repositories` struct (facilita injecao de dependencias)
+- `models.go` - Models do banco (`SessionModel`) + helpers (`NullString`, getters)
+- `session.go` - `SessionRepository` interface + implementacao PostgreSQL
+
+**SessionRepository interface:**
+```go
+type SessionRepository interface {
+    Create(ctx, session) error
+    GetByName(ctx, name) (*SessionModel, error)
+    GetByToken(ctx, token) (*SessionModel, error)
+    List(ctx) ([]*SessionModel, error)
+    Update(ctx, session) error
+    Delete(ctx, name) error
+    UpdateConnection(ctx, name, connected, jid, phone, pushName) error
+}
+```
+
+**Uso no main.go:**
+```go
+repos := repository.New(db.DB)
+provider := wameow.New(db.Container, repos.Session, log)
+```
 
 ### Integrations (`internal/integrations/`)
 
@@ -332,16 +361,28 @@ Todos handlers dependem de `domain.Provider` interface.
 - `Global()` - Requer GLOBAL_API_TOKEN
 - `Session()` - Aceita GLOBAL_API_TOKEN ou Session Token
 
+### `internal/repository/`
+Camada de persistencia com Repository Pattern.
+
+**Arquivos:**
+- `repository.go` - Agregador `Repositories` (cria todos os repos)
+- `models.go` - `SessionModel` + helpers (`GetJID()`, `NullString()`)
+- `session.go` - `SessionRepository` interface + implementacao
+
 ### `internal/providers/wameow/`
 Implementacao do `domain.Provider` usando whatsmeow.
 
 **Arquivos:**
-- `manager.go` - Manager struct, CreateSession, Connect, Disconnect
+- `manager.go` - Manager struct, CreateSession, Connect, Disconnect (usa SessionRepository)
 - `session.go` - Session struct implementando domain.Session
 - `message.go` - SendText, SendImage, SendVideo, etc.
 - `group.go` - CreateGroup, GetGroups, SetGroupName, Participants, etc.
 - `chat.go` - MarkRead, SendTyping, SetDisappearing, SendPresence
 - `user.go` - CheckPhone, GetUserInfo, GetProfilePicture, Blocklist
+
+**Manager depende de:**
+- `sqlstore.Container` - Para devices do whatsmeow
+- `SessionRepository` - Para persistir sessoes no banco
 
 ## Development Patterns
 
@@ -375,13 +416,27 @@ Implementacao do `domain.Provider` usando whatsmeow.
 1. Criar pasta em `internal/providers/novoProvider/`
 2. Implementar `domain.Provider` interface
 3. Criar struct que implementa `domain.Session` interface
-4. Registrar no `cmd/server/main.go`
+4. Injetar `SessionRepository` se precisar persistir sessoes
+5. Registrar no `cmd/server/main.go`
+
+### Adding a New Repository
+1. Criar model em `internal/repository/models.go`
+2. Criar arquivo `internal/repository/novaentidade.go` com interface + impl
+3. Adicionar ao agregador `Repositories` em `repository.go`
+4. Criar migration SQL em `internal/database/upgrades/`
 
 ### Database
 - PostgreSQL com pgx driver
 - Migrations em `internal/database/upgrades/`
 - Colunas em camelCase com aspas duplas
 - whatsmeow usa suas proprias tabelas (prefixo `whatsmeow_`)
+- Sessoes persistidas via `SessionRepository` (nao apenas em memoria)
+
+### Repository Pattern
+- Interfaces em `internal/repository/`
+- Models separados dos DTOs (models = banco, DTOs = API)
+- Agregador `Repositories` para facilitar injecao de dependencias
+- Helpers como `NullString()` para conversao sql.NullString
 
 ## Environment Variables
 
@@ -419,9 +474,11 @@ docker compose up -d
 
 - whatsmeow requer contexto em quase todos os metodos
 - QR code expira rapido, cliente deve fazer polling
-- Sessoes persistidas no PostgreSQL via sqlstore
+- QR code no terminal usa `qrterminal.GenerateHalfBlock()` (half-blocks Unicode)
+- Sessoes persistidas no PostgreSQL via `SessionRepository` + whatsmeow sqlstore
 - Sempre usar aspas duplas para colunas camelCase no SQL
 - Todos os campos JSON usam PascalCase (compatibilidade WuzAPI)
 - Handlers dependem de `domain.Provider` interface, nao de implementacoes concretas
+- Provider `wameow` depende de `SessionRepository` para persistencia
 - Varios endpoints de Newsletter, Privacy e Profile ainda nao estao implementados
 </coding_guidelines>

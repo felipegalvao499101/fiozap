@@ -9,12 +9,14 @@ import (
 
 // Session representa uma sessao WhatsApp
 type Session struct {
+	ID        string
 	Name      string
 	Token     string
 	Client    *whatsmeow.Client
 	Device    *store.Device
 	connected bool
 	qrCode    string
+	jid       string
 	mu        sync.RWMutex
 }
 
@@ -60,7 +62,9 @@ func (s *Session) GetJID() string {
 	if s.Client != nil && s.Client.Store.ID != nil {
 		return s.Client.Store.ID.String()
 	}
-	return ""
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.jid
 }
 
 func (s *Session) GetToken() string {

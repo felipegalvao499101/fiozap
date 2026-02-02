@@ -9,10 +9,13 @@ import (
 	"sync"
 
 	"fiozap/internal/domain"
+	"fiozap/internal/repository"
 
+	"github.com/google/uuid"
 	"github.com/mdp/qrterminal/v3"
 	"github.com/rs/zerolog"
 	"go.mau.fi/whatsmeow"
+	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
@@ -23,15 +26,51 @@ type Manager struct {
 	sessions  map[string]*Session
 	mu        sync.RWMutex
 	container *sqlstore.Container
+	repo      repository.SessionRepository
 	log       zerolog.Logger
 }
 
 // New cria um novo Manager
-func New(container *sqlstore.Container, log zerolog.Logger) *Manager {
-	return &Manager{
+func New(container *sqlstore.Container, repo repository.SessionRepository, log zerolog.Logger) *Manager {
+	m := &Manager{
 		sessions:  make(map[string]*Session),
 		container: container,
+		repo:      repo,
 		log:       log.With().Str("component", "wameow").Logger(),
+	}
+	m.loadSessionsFromDB()
+	return m
+}
+
+// loadSessionsFromDB carrega sessoes existentes do banco
+func (m *Manager) loadSessionsFromDB() {
+	sessions, err := m.repo.List(context.Background())
+	if err != nil {
+		m.log.Error().Err(err).Msg("Failed to load sessions from DB")
+		return
+	}
+
+	for _, s := range sessions {
+		// Busca device do whatsmeow se existir JID
+		var device *store.Device
+		if s.JID.Valid && s.JID.String != "" {
+			parsedJID, _ := types.ParseJID(s.JID.String)
+			if !parsedJID.IsEmpty() {
+				device, _ = m.container.GetDevice(context.Background(), parsedJID)
+			}
+		}
+		if device == nil {
+			device = m.container.NewDevice()
+		}
+
+		session := &Session{
+			ID:     s.ID,
+			Name:   s.Name,
+			Token:  s.Token,
+			Device: device,
+		}
+		m.sessions[s.Name] = session
+		m.log.Info().Str("name", s.Name).Msg("Session loaded from DB")
 	}
 }
 
@@ -51,9 +90,21 @@ func (m *Manager) CreateSession(ctx context.Context, name string) (domain.Sessio
 	}
 
 	session := &Session{
+		ID:     uuid.New().String(),
 		Name:   name,
 		Token:  generateToken(),
 		Device: m.container.NewDevice(),
+	}
+
+	// Persiste no banco
+	model := &repository.SessionModel{
+		ID:        session.ID,
+		Name:      session.Name,
+		Token:     session.Token,
+		Connected: false,
+	}
+	if err := m.repo.Create(ctx, model); err != nil {
+		return nil, fmt.Errorf("failed to save session: %w", err)
 	}
 
 	m.sessions[name] = session
@@ -111,6 +162,11 @@ func (m *Manager) DeleteSession(ctx context.Context, name string) error {
 		session.Client.Disconnect()
 	}
 
+	// Remove do banco
+	if err := m.repo.Delete(ctx, name); err != nil {
+		return fmt.Errorf("failed to delete session from DB: %w", err)
+	}
+
 	delete(m.sessions, name)
 	m.log.Info().Str("name", name).Msg("Session deleted")
 	return nil
@@ -155,30 +211,49 @@ func (m *Manager) handleQR(session *Session, qrChan <-chan whatsmeow.QRChannelIt
 			session.setQRCode(evt.Code)
 			m.log.Info().Str("name", session.Name).Msg("QR code received")
 			fmt.Printf("\n=== QR Code for session '%s' ===\n", session.Name)
-			qrterminal.GenerateWithConfig(evt.Code, qrterminal.Config{
-				Level:     qrterminal.L,
-				Writer:    os.Stdout,
-				BlackChar: qrterminal.BLACK,
-				WhiteChar: qrterminal.WHITE,
-				QuietZone: 1,
-			})
+			qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
 			fmt.Println("================================")
 		}
 	}
 }
 
 func (m *Manager) handleEvent(session *Session, evt interface{}) {
-	switch evt.(type) {
+	switch e := evt.(type) {
 	case *events.Connected:
 		session.setConnected(true)
 		session.setQRCode("")
+		m.updateSessionInDB(session)
 		m.log.Info().Str("name", session.Name).Msg("Connected")
+	case *events.PairSuccess:
+		// Atualiza JID quando parear com sucesso
+		if session.Client != nil && session.Client.Store.ID != nil {
+			session.mu.Lock()
+			session.jid = session.Client.Store.ID.String()
+			session.mu.Unlock()
+		}
+		m.updateSessionInDB(session)
+		m.log.Info().Str("name", session.Name).Str("jid", e.ID.String()).Msg("Pair success")
 	case *events.Disconnected:
 		session.setConnected(false)
+		m.updateSessionInDB(session)
 		m.log.Info().Str("name", session.Name).Msg("Disconnected")
 	case *events.LoggedOut:
 		session.setConnected(false)
+		m.updateSessionInDB(session)
 		m.log.Warn().Str("name", session.Name).Msg("Logged out")
+	}
+}
+
+// updateSessionInDB atualiza os dados da sessao no banco
+func (m *Manager) updateSessionInDB(session *Session) {
+	jid := session.GetJID()
+	phone := session.GetPhone()
+	pushName := session.GetPushName()
+	connected := session.IsConnected()
+
+	err := m.repo.UpdateConnection(context.Background(), session.Name, connected, jid, phone, pushName)
+	if err != nil {
+		m.log.Error().Err(err).Str("name", session.Name).Msg("Failed to update session in DB")
 	}
 }
 
