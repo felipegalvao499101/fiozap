@@ -1,4 +1,4 @@
-.PHONY: build run test lint swagger clean docker-up docker-down help
+.PHONY: build run test lint swagger clean docker-up docker-down help restart stop
 
 # Variaveis
 BINARY_NAME=fiozap
@@ -68,6 +68,20 @@ db-down:
 # Development
 dev: swagger run
 
+# Stop server
+stop:
+	@echo "Parando servidor..."
+	@-pkill -f "$(BINARY_NAME)" 2>/dev/null || true
+	@-pkill -f "go run $(MAIN_PATH)" 2>/dev/null || true
+	@-lsof -ti:8080 | xargs kill -9 2>/dev/null || true
+	@echo "Servidor parado"
+
+# Restart server
+restart: stop
+	@sleep 1
+	@echo "Iniciando servidor..."
+	@$(MAKE) run
+
 # Install tools
 tools:
 	go install github.com/swaggo/swag/cmd/swag@latest
@@ -93,4 +107,6 @@ help:
 	@echo "  make db-up         - Sobe apenas o PostgreSQL"
 	@echo "  make dev           - Gera swagger e executa"
 	@echo "  make tools         - Instala ferramentas de desenvolvimento"
+	@echo "  make stop          - Para o servidor"
+	@echo "  make restart       - Reinicia o servidor"
 	@echo "  make help          - Mostra esta ajuda"

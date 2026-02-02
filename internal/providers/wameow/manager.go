@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 
 	"fiozap/internal/domain"
@@ -330,9 +331,10 @@ func (m *Manager) getClient(name string) (*whatsmeow.Client, error) {
 
 // parseJID converte string para JID
 func parseJID(phone string) types.JID {
-	jid, _ := types.ParseJID(phone)
-	if jid.IsEmpty() {
+	// Se não contém @, é apenas um número de telefone
+	if !strings.Contains(phone, "@") {
 		return types.NewJID(phone, types.DefaultUserServer)
 	}
+	jid, _ := types.ParseJID(phone)
 	return jid
 }
