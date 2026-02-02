@@ -6,17 +6,17 @@ import (
 	"strings"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/skip2/go-qrcode"
 )
 
 type SessionHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewSessionHandler(provider domain.Provider) *SessionHandler {
+func NewSessionHandler(provider core.Provider) *SessionHandler {
 	return &SessionHandler{provider: provider}
 }
 
@@ -229,7 +229,7 @@ func (h *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	dto.Success(w, map[string]string{"Details": "Logged out"})
 }
 
-func sessionToDTO(s domain.Session) dto.SessionResponse {
+func sessionToDTO(s core.Session) dto.SessionResponse {
 	return dto.SessionResponse{
 		Name:      s.GetName(),
 		JID:       s.GetJID(),

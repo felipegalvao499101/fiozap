@@ -7,7 +7,8 @@ import (
 	"fiozap/docs"
 	"fiozap/internal/api/auth"
 	"fiozap/internal/api/handlers"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
+	"fiozap/internal/integrations/webhook"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,7 +16,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-func New(provider domain.Provider, logger zerolog.Logger, globalToken string) http.Handler {
+func New(provider core.Provider, logger zerolog.Logger, globalToken string, webhookDispatcher *webhook.Dispatcher) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Recoverer)
@@ -35,6 +36,7 @@ func New(provider domain.Provider, logger zerolog.Logger, globalToken string) ht
 	newsletterHandler := handlers.NewNewsletterHandler(provider)
 	privacyHandler := handlers.NewPrivacyHandler(provider)
 	profileHandler := handlers.NewProfileHandler(provider)
+	webhookHandler := handlers.NewWebhookHandler(webhookDispatcher)
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -188,8 +190,20 @@ func New(provider domain.Provider, logger zerolog.Logger, globalToken string) ht
 
 			// Calls
 			r.Post("/calls/reject", callHandler.RejectCall)
+
+			// Webhook
+			r.Route("/webhook", func(r chi.Router) {
+				r.Post("/", webhookHandler.SetWebhook)
+				r.Get("/", webhookHandler.GetWebhook)
+				r.Delete("/", webhookHandler.DeleteWebhook)
+				r.Post("/hmac", webhookHandler.SetHMAC)
+				r.Delete("/hmac", webhookHandler.DeleteHMAC)
+			})
 		})
 	})
+
+	// Global webhook events endpoint
+	r.With(authMiddleware.Global).Get("/webhook/events", webhookHandler.GetSupportedEvents)
 
 	return r
 }

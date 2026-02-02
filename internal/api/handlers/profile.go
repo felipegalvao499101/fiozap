@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 )
 
 type ProfileHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewProfileHandler(provider domain.Provider) *ProfileHandler {
+func NewProfileHandler(provider core.Provider) *ProfileHandler {
 	return &ProfileHandler{provider: provider}
 }
 

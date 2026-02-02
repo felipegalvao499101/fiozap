@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 )
 
 type PrivacyHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewPrivacyHandler(provider domain.Provider) *PrivacyHandler {
+func NewPrivacyHandler(provider core.Provider) *PrivacyHandler {
 	return &PrivacyHandler{provider: provider}
 }
 

@@ -9,7 +9,8 @@ import (
 	"strings"
 	"sync"
 
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
+	"fiozap/internal/integrations/webhook"
 	"fiozap/internal/repository"
 
 	"github.com/google/uuid"
@@ -28,15 +29,17 @@ type Manager struct {
 	mu        sync.RWMutex
 	container *sqlstore.Container
 	repo      repository.SessionRepository
+	webhook   *webhook.Dispatcher
 	log       zerolog.Logger
 }
 
 // New cria um novo Manager
-func New(container *sqlstore.Container, repo repository.SessionRepository, log zerolog.Logger) *Manager {
+func New(container *sqlstore.Container, repo repository.SessionRepository, log zerolog.Logger, webhookDispatcher *webhook.Dispatcher) *Manager {
 	m := &Manager{
 		sessions:  make(map[string]*Session),
 		container: container,
 		repo:      repo,
+		webhook:   webhookDispatcher,
 		log:       log.With().Str("component", "wameow").Logger(),
 	}
 	m.loadSessionsFromDB()
@@ -103,7 +106,7 @@ func generateToken() string {
 }
 
 // CreateSession cria uma nova sessao
-func (m *Manager) CreateSession(ctx context.Context, name string) (domain.Session, error) {
+func (m *Manager) CreateSession(ctx context.Context, name string) (core.Session, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -135,7 +138,7 @@ func (m *Manager) CreateSession(ctx context.Context, name string) (domain.Sessio
 }
 
 // GetSession retorna uma sessao existente
-func (m *Manager) GetSession(name string) (domain.Session, error) {
+func (m *Manager) GetSession(name string) (core.Session, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -159,11 +162,11 @@ func (m *Manager) getSessionInternal(name string) (*Session, error) {
 }
 
 // ListSessions lista todas as sessoes
-func (m *Manager) ListSessions() []domain.Session {
+func (m *Manager) ListSessions() []core.Session {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	list := make([]domain.Session, 0, len(m.sessions))
+	list := make([]core.Session, 0, len(m.sessions))
 	for _, s := range m.sessions {
 		list = append(list, s)
 	}
@@ -195,7 +198,7 @@ func (m *Manager) DeleteSession(ctx context.Context, name string) error {
 }
 
 // Connect conecta uma sessao
-func (m *Manager) Connect(ctx context.Context, name string) (domain.Session, error) {
+func (m *Manager) Connect(ctx context.Context, name string) (core.Session, error) {
 	session, err := m.getSessionInternal(name)
 	if err != nil {
 		return nil, err
@@ -251,14 +254,17 @@ func (m *Manager) handleQR(session *Session, qrChan <-chan whatsmeow.QRChannelIt
 }
 
 func (m *Manager) handleEvent(session *Session, evt interface{}) {
+	ctx := context.Background()
+
 	switch e := evt.(type) {
 	case *events.Connected:
 		session.setConnected(true)
 		session.setQRCode("")
 		m.updateSessionInDB(session)
 		m.log.Info().Str("name", session.Name).Msg("Connected")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventConnected, e)
+
 	case *events.PairSuccess:
-		// Atualiza JID quando parear com sucesso
 		if session.Client != nil && session.Client.Store.ID != nil {
 			session.mu.Lock()
 			session.jid = session.Client.Store.ID.String()
@@ -266,14 +272,83 @@ func (m *Manager) handleEvent(session *Session, evt interface{}) {
 		}
 		m.updateSessionInDB(session)
 		m.log.Info().Str("name", session.Name).Str("jid", e.ID.String()).Msg("Pair success")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventPairSuccess, e)
+
 	case *events.Disconnected:
 		session.setConnected(false)
 		m.updateSessionInDB(session)
 		m.log.Info().Str("name", session.Name).Msg("Disconnected")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventDisconnected, e)
+
 	case *events.LoggedOut:
 		session.setConnected(false)
 		m.updateSessionInDB(session)
 		m.log.Warn().Str("name", session.Name).Msg("Logged out")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventLoggedOut, e)
+
+	case *events.Message:
+		m.log.Debug().Str("name", session.Name).Str("from", e.Info.Sender.String()).Msg("Message received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventMessage, e)
+
+	case *events.Receipt:
+		m.log.Debug().Str("name", session.Name).Strs("ids", e.MessageIDs).Msg("Receipt received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventReceipt, e)
+
+	case *events.Presence:
+		m.log.Debug().Str("name", session.Name).Str("from", e.From.String()).Msg("Presence received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventPresence, e)
+
+	case *events.ChatPresence:
+		m.log.Debug().Str("name", session.Name).Str("chat", e.Chat.String()).Msg("Chat presence received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventChatPresence, e)
+
+	case *events.HistorySync:
+		m.log.Debug().Str("name", session.Name).Msg("History sync received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventHistorySync, e)
+
+	case *events.GroupInfo:
+		m.log.Debug().Str("name", session.Name).Str("group", e.JID.String()).Msg("Group info received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventGroupInfo, e)
+
+	case *events.JoinedGroup:
+		m.log.Debug().Str("name", session.Name).Str("group", e.JID.String()).Msg("Joined group")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventJoinedGroup, e)
+
+	case *events.Picture:
+		m.log.Debug().Str("name", session.Name).Str("jid", e.JID.String()).Msg("Picture updated")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventPicture, e)
+
+	case *events.CallOffer:
+		m.log.Info().Str("name", session.Name).Str("from", e.From.String()).Msg("Call offer received")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventCallOffer, e)
+
+	case *events.CallAccept:
+		m.log.Debug().Str("name", session.Name).Msg("Call accepted")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventCallAccept, e)
+
+	case *events.CallTerminate:
+		m.log.Debug().Str("name", session.Name).Msg("Call terminated")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventCallTerminate, e)
+
+	case *events.KeepAliveTimeout:
+		m.log.Warn().Str("name", session.Name).Msg("Keep alive timeout")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventKeepAliveTimeout, e)
+
+	case *events.KeepAliveRestored:
+		m.log.Info().Str("name", session.Name).Msg("Keep alive restored")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventKeepAliveRestored, e)
+
+	case *events.ConnectFailure:
+		m.log.Error().Str("name", session.Name).Str("reason", e.Reason.String()).Msg("Connect failure")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventConnectFailure, e)
+
+	case *events.StreamError:
+		m.log.Error().Str("name", session.Name).Str("code", e.Code).Msg("Stream error")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventStreamError, e)
+
+	case *events.TemporaryBan:
+		m.log.Warn().Str("name", session.Name).Str("reason", e.String()).Msg("Temporary ban")
+		m.webhook.Dispatch(ctx, session.Name, webhook.EventTemporaryBan, e)
 	}
 }
 

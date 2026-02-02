@@ -45,7 +45,7 @@ func ProcessFormFile(r *http.Request, fieldName string) (*MediaResult, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get form file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
@@ -75,7 +75,7 @@ func downloadFromURL(url string, providedMimeType string) (*MediaResult, error) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to download from URL: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to download from URL: status %d", resp.StatusCode)

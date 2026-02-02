@@ -12,6 +12,7 @@ import (
 	"fiozap/internal/api/router"
 	"fiozap/internal/config"
 	"fiozap/internal/database"
+	"fiozap/internal/integrations/webhook"
 	"fiozap/internal/logger"
 	"fiozap/internal/providers/wameow"
 	"fiozap/internal/repository"
@@ -51,12 +52,13 @@ func main() {
 	log.Info().Msg("Connected to database")
 
 	repos := repository.New(db.DB)
-	provider := wameow.New(db.Container, repos.Session, log)
+	webhookDispatcher := webhook.NewDispatcher(log)
+	provider := wameow.New(db.Container, repos.Session, log, webhookDispatcher)
 
 	addr := fmt.Sprintf("%s:%s", cfg.ServerHost, cfg.ServerPort)
 	server := &http.Server{
 		Addr:    addr,
-		Handler: router.New(provider, log, cfg.GlobalAPIToken),
+		Handler: router.New(provider, log, cfg.GlobalAPIToken, webhookDispatcher),
 	}
 
 	go func() {

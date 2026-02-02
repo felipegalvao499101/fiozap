@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -16,10 +16,10 @@ const CtxKeyIsGlobal ctxKey = "isGlobal"
 
 type Auth struct {
 	globalToken string
-	provider    domain.Provider
+	provider    core.Provider
 }
 
-func NewAuth(globalToken string, provider domain.Provider) *Auth {
+func NewAuth(globalToken string, provider core.Provider) *Auth {
 	return &Auth{
 		globalToken: globalToken,
 		provider:    provider,

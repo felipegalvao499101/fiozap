@@ -5,16 +5,16 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type CallHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewCallHandler(provider domain.Provider) *CallHandler {
+func NewCallHandler(provider core.Provider) *CallHandler {
 	return &CallHandler{provider: provider}
 }
 

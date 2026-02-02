@@ -3,13 +3,13 @@ package wameow
 import (
 	"context"
 
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"go.mau.fi/whatsmeow/types"
 )
 
 // CheckPhone verifica se numeros estao no WhatsApp
-func (m *Manager) CheckPhone(ctx context.Context, session string, phones []string) ([]domain.PhoneCheck, error) {
+func (m *Manager) CheckPhone(ctx context.Context, session string, phones []string) ([]core.PhoneCheck, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -20,9 +20,9 @@ func (m *Manager) CheckPhone(ctx context.Context, session string, phones []strin
 		return nil, err
 	}
 
-	checks := make([]domain.PhoneCheck, len(results))
+	checks := make([]core.PhoneCheck, len(results))
 	for i, r := range results {
-		checks[i] = domain.PhoneCheck{
+		checks[i] = core.PhoneCheck{
 			Phone:        r.Query,
 			IsOnWhatsApp: r.IsIn,
 			JID:          r.JID.String(),
@@ -32,7 +32,7 @@ func (m *Manager) CheckPhone(ctx context.Context, session string, phones []strin
 }
 
 // GetUserInfo retorna informacoes de usuarios
-func (m *Manager) GetUserInfo(ctx context.Context, session string, phones []string) (map[string]domain.UserInfo, error) {
+func (m *Manager) GetUserInfo(ctx context.Context, session string, phones []string) (map[string]core.UserInfo, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -48,13 +48,13 @@ func (m *Manager) GetUserInfo(ctx context.Context, session string, phones []stri
 		return nil, err
 	}
 
-	result := make(map[string]domain.UserInfo)
+	result := make(map[string]core.UserInfo)
 	for jid, ui := range info {
 		devices := make([]string, len(ui.Devices))
 		for i, d := range ui.Devices {
 			devices[i] = d.String()
 		}
-		result[jid.String()] = domain.UserInfo{
+		result[jid.String()] = core.UserInfo{
 			Status:    ui.Status,
 			PictureID: ui.PictureID,
 			Devices:   devices,
@@ -64,7 +64,7 @@ func (m *Manager) GetUserInfo(ctx context.Context, session string, phones []stri
 }
 
 // GetProfilePicture retorna foto de perfil
-func (m *Manager) GetProfilePicture(ctx context.Context, session, phone string) (*domain.ProfilePicture, error) {
+func (m *Manager) GetProfilePicture(ctx context.Context, session, phone string) (*core.ProfilePicture, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (m *Manager) GetProfilePicture(ctx context.Context, session, phone string) 
 		return nil, nil
 	}
 
-	return &domain.ProfilePicture{URL: pic.URL, ID: pic.ID}, nil
+	return &core.ProfilePicture{URL: pic.URL, ID: pic.ID}, nil
 }
 
 // GetBlocklist retorna lista de bloqueados

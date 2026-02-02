@@ -5,16 +5,16 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type GroupHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewGroupHandler(provider domain.Provider) *GroupHandler {
+func NewGroupHandler(provider core.Provider) *GroupHandler {
 	return &GroupHandler{provider: provider}
 }
 
@@ -660,7 +660,7 @@ func (h *GroupHandler) GetLinkedParticipants(w http.ResponseWriter, r *http.Requ
 	dto.Error(w, http.StatusNotImplemented, "not implemented")
 }
 
-func groupToDTO(g *domain.GroupInfo) dto.GroupResponse {
+func groupToDTO(g *core.GroupInfo) dto.GroupResponse {
 	participants := make([]dto.ParticipantResponse, len(g.Participants))
 	for i, p := range g.Participants {
 		participants[i] = dto.ParticipantResponse{

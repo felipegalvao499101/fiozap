@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 )
 
 type NewsletterHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewNewsletterHandler(provider domain.Provider) *NewsletterHandler {
+func NewNewsletterHandler(provider core.Provider) *NewsletterHandler {
 	return &NewsletterHandler{provider: provider}
 }
 

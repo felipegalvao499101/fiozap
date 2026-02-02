@@ -5,14 +5,14 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/types"
 )
 
 // CreateGroup cria um grupo
-func (m *Manager) CreateGroup(ctx context.Context, session, name string, participants []string) (*domain.GroupInfo, error) {
+func (m *Manager) CreateGroup(ctx context.Context, session, name string, participants []string) (*core.GroupInfo, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (m *Manager) CreateGroup(ctx context.Context, session, name string, partici
 }
 
 // GetGroups lista grupos
-func (m *Manager) GetGroups(ctx context.Context, session string) ([]*domain.GroupInfo, error) {
+func (m *Manager) GetGroups(ctx context.Context, session string) ([]*core.GroupInfo, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (m *Manager) GetGroups(ctx context.Context, session string) ([]*domain.Grou
 		return nil, err
 	}
 
-	result := make([]*domain.GroupInfo, len(groups))
+	result := make([]*core.GroupInfo, len(groups))
 	for i, g := range groups {
 		result[i] = groupToInfo(g)
 	}
@@ -54,7 +54,7 @@ func (m *Manager) GetGroups(ctx context.Context, session string) ([]*domain.Grou
 }
 
 // GetGroupInfo retorna info do grupo
-func (m *Manager) GetGroupInfo(ctx context.Context, session, groupJID string) (*domain.GroupInfo, error) {
+func (m *Manager) GetGroupInfo(ctx context.Context, session, groupJID string) (*core.GroupInfo, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func (m *Manager) JoinGroupWithLink(ctx context.Context, session, code string) (
 }
 
 // GetGroupInfoFromLink retorna info do grupo pelo link
-func (m *Manager) GetGroupInfoFromLink(ctx context.Context, session, code string) (*domain.GroupInfo, error) {
+func (m *Manager) GetGroupInfoFromLink(ctx context.Context, session, code string) (*core.GroupInfo, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -253,17 +253,17 @@ func (m *Manager) SetGroupLocked(ctx context.Context, session, groupJID string, 
 	return client.SetGroupLocked(ctx, jid, locked)
 }
 
-func groupToInfo(g *types.GroupInfo) *domain.GroupInfo {
-	participants := make([]domain.GroupParticipant, len(g.Participants))
+func groupToInfo(g *types.GroupInfo) *core.GroupInfo {
+	participants := make([]core.GroupParticipant, len(g.Participants))
 	for i, p := range g.Participants {
-		participants[i] = domain.GroupParticipant{
+		participants[i] = core.GroupParticipant{
 			JID:          p.JID.String(),
 			IsAdmin:      p.IsAdmin,
 			IsSuperAdmin: p.IsSuperAdmin,
 		}
 	}
 
-	return &domain.GroupInfo{
+	return &core.GroupInfo{
 		JID:          g.JID.String(),
 		Name:         g.Name,
 		Topic:        g.Topic,

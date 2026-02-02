@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type ChatHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewChatHandler(provider domain.Provider) *ChatHandler {
+func NewChatHandler(provider core.Provider) *ChatHandler {
 	return &ChatHandler{provider: provider}
 }
 

@@ -5,16 +5,16 @@ import (
 	"net/http"
 
 	"fiozap/internal/api/dto"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type BlocklistHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewBlocklistHandler(provider domain.Provider) *BlocklistHandler {
+func NewBlocklistHandler(provider core.Provider) *BlocklistHandler {
 	return &BlocklistHandler{provider: provider}
 }
 

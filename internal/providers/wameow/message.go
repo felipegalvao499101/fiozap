@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
@@ -12,7 +12,7 @@ import (
 )
 
 // SendText envia mensagem de texto
-func (m *Manager) SendText(ctx context.Context, session, to, text string) (*domain.MessageResponse, error) {
+func (m *Manager) SendText(ctx context.Context, session, to, text string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -25,11 +25,11 @@ func (m *Manager) SendText(ctx context.Context, session, to, text string) (*doma
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendImage envia imagem
-func (m *Manager) SendImage(ctx context.Context, session, to string, data []byte, caption, mimeType string) (*domain.MessageResponse, error) {
+func (m *Manager) SendImage(ctx context.Context, session, to string, data []byte, caption, mimeType string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -56,11 +56,11 @@ func (m *Manager) SendImage(ctx context.Context, session, to string, data []byte
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendVideo envia video
-func (m *Manager) SendVideo(ctx context.Context, session, to string, data []byte, caption, mimeType string) (*domain.MessageResponse, error) {
+func (m *Manager) SendVideo(ctx context.Context, session, to string, data []byte, caption, mimeType string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -87,11 +87,11 @@ func (m *Manager) SendVideo(ctx context.Context, session, to string, data []byte
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendAudio envia audio
-func (m *Manager) SendAudio(ctx context.Context, session, to string, data []byte, mimeType string) (*domain.MessageResponse, error) {
+func (m *Manager) SendAudio(ctx context.Context, session, to string, data []byte, mimeType string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -117,11 +117,11 @@ func (m *Manager) SendAudio(ctx context.Context, session, to string, data []byte
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendDocument envia documento
-func (m *Manager) SendDocument(ctx context.Context, session, to string, data []byte, filename, mimeType string) (*domain.MessageResponse, error) {
+func (m *Manager) SendDocument(ctx context.Context, session, to string, data []byte, filename, mimeType string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -148,11 +148,11 @@ func (m *Manager) SendDocument(ctx context.Context, session, to string, data []b
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendSticker envia sticker
-func (m *Manager) SendSticker(ctx context.Context, session, to string, data []byte, mimeType string) (*domain.MessageResponse, error) {
+func (m *Manager) SendSticker(ctx context.Context, session, to string, data []byte, mimeType string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -178,11 +178,11 @@ func (m *Manager) SendSticker(ctx context.Context, session, to string, data []by
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendLocation envia localizacao
-func (m *Manager) SendLocation(ctx context.Context, session, to string, lat, lng float64, name, address string) (*domain.MessageResponse, error) {
+func (m *Manager) SendLocation(ctx context.Context, session, to string, lat, lng float64, name, address string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -200,11 +200,11 @@ func (m *Manager) SendLocation(ctx context.Context, session, to string, lat, lng
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendContact envia contato
-func (m *Manager) SendContact(ctx context.Context, session, to, name, vcard string) (*domain.MessageResponse, error) {
+func (m *Manager) SendContact(ctx context.Context, session, to, name, vcard string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -220,11 +220,11 @@ func (m *Manager) SendContact(ctx context.Context, session, to, name, vcard stri
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendPoll envia enquete
-func (m *Manager) SendPoll(ctx context.Context, session, to, question string, options []string, multiSelect bool) (*domain.MessageResponse, error) {
+func (m *Manager) SendPoll(ctx context.Context, session, to, question string, options []string, multiSelect bool) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -241,11 +241,11 @@ func (m *Manager) SendPoll(ctx context.Context, session, to, question string, op
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // SendReaction envia reacao
-func (m *Manager) SendReaction(ctx context.Context, session, to, messageID, emoji string) (*domain.MessageResponse, error) {
+func (m *Manager) SendReaction(ctx context.Context, session, to, messageID, emoji string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -258,11 +258,11 @@ func (m *Manager) SendReaction(ctx context.Context, session, to, messageID, emoj
 		return nil, fmt.Errorf("send failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // EditMessage edita mensagem
-func (m *Manager) EditMessage(ctx context.Context, session, chat, messageID, newText string) (*domain.MessageResponse, error) {
+func (m *Manager) EditMessage(ctx context.Context, session, chat, messageID, newText string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -275,11 +275,11 @@ func (m *Manager) EditMessage(ctx context.Context, session, chat, messageID, new
 		return nil, fmt.Errorf("edit failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }
 
 // RevokeMessage revoga/apaga mensagem
-func (m *Manager) RevokeMessage(ctx context.Context, session, chat, messageID string) (*domain.MessageResponse, error) {
+func (m *Manager) RevokeMessage(ctx context.Context, session, chat, messageID string) (*core.MessageResponse, error) {
 	client, err := m.getClient(session)
 	if err != nil {
 		return nil, err
@@ -292,5 +292,5 @@ func (m *Manager) RevokeMessage(ctx context.Context, session, chat, messageID st
 		return nil, fmt.Errorf("revoke failed: %w", err)
 	}
 
-	return &domain.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
+	return &core.MessageResponse{ID: resp.ID, Timestamp: resp.Timestamp}, nil
 }

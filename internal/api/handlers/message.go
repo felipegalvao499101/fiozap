@@ -7,16 +7,16 @@ import (
 
 	"fiozap/internal/api/dto"
 	"fiozap/internal/api/utils"
-	"fiozap/internal/domain"
+	"fiozap/internal/core"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type MessageHandler struct {
-	provider domain.Provider
+	provider core.Provider
 }
 
-func NewMessageHandler(provider domain.Provider) *MessageHandler {
+func NewMessageHandler(provider core.Provider) *MessageHandler {
 	return &MessageHandler{provider: provider}
 }
 
