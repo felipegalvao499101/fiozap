@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"fiozap/internal/api/dto"
 	"fiozap/internal/domain"
@@ -111,6 +112,11 @@ func (h *SessionHandler) Connect(w http.ResponseWriter, r *http.Request) {
 
 	session, err := h.provider.Connect(r.Context(), name)
 	if err != nil {
+		// Se a sessão não existe, retorna 404
+		if strings.Contains(err.Error(), "not found") {
+			dto.Error(w, http.StatusNotFound, err.Error())
+			return
+		}
 		dto.Error(w, http.StatusInternalServerError, err.Error())
 		return
 	}

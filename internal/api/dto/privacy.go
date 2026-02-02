@@ -3,13 +3,13 @@ package dto
 // Privacy Settings
 
 type PrivacySettingsResponse struct {
-	GroupAdd       string `json:"GroupAdd,omitempty"`       // all, contacts, contact_blacklist
-	LastSeen       string `json:"LastSeen,omitempty"`       // all, contacts, contact_blacklist, none
-	Status         string `json:"Status,omitempty"`         // all, contacts, contact_blacklist, none
-	Profile        string `json:"Profile,omitempty"`        // all, contacts, contact_blacklist, none
-	ReadReceipts   string `json:"ReadReceipts,omitempty"`   // all, none
-	CallAdd        string `json:"CallAdd,omitempty"`        // all, known
-	Online         string `json:"Online,omitempty"`         // all, match_last_seen
+	GroupAdd     string `json:"GroupAdd,omitempty"`     // all, contacts, contact_blacklist
+	LastSeen     string `json:"LastSeen,omitempty"`     // all, contacts, contact_blacklist, none
+	Status       string `json:"Status,omitempty"`       // all, contacts, contact_blacklist, none
+	Profile      string `json:"Profile,omitempty"`      // all, contacts, contact_blacklist, none
+	ReadReceipts string `json:"ReadReceipts,omitempty"` // all, none
+	CallAdd      string `json:"CallAdd,omitempty"`      // all, known
+	Online       string `json:"Online,omitempty"`       // all, match_last_seen
 }
 
 type SetPrivacyRequest struct {

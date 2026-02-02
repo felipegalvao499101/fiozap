@@ -50,6 +50,8 @@ func (m *Manager) loadSessionsFromDB() {
 		return
 	}
 
+	var sessionsToReconnect []string
+
 	for _, s := range sessions {
 		// Busca device do whatsmeow se existir JID
 		var device *store.Device
@@ -71,6 +73,25 @@ func (m *Manager) loadSessionsFromDB() {
 		}
 		m.sessions[s.Name] = session
 		m.log.Info().Str("name", s.Name).Msg("Session loaded from DB")
+
+		// Marca para reconexão se estava conectada e tem JID (já pareada)
+		if s.Connected && s.JID.Valid && s.JID.String != "" {
+			sessionsToReconnect = append(sessionsToReconnect, s.Name)
+		}
+	}
+
+	// Reconecta sessões em background
+	for _, name := range sessionsToReconnect {
+		go m.reconnectSession(name)
+	}
+}
+
+// reconnectSession tenta reconectar uma sessão
+func (m *Manager) reconnectSession(name string) {
+	m.log.Info().Str("name", name).Msg("Attempting to reconnect session")
+	_, err := m.Connect(context.Background(), name)
+	if err != nil {
+		m.log.Error().Err(err).Str("name", name).Msg("Failed to reconnect session")
 	}
 }
 
@@ -191,7 +212,8 @@ func (m *Manager) Connect(ctx context.Context, name string) (domain.Session, err
 	})
 
 	if client.Store.ID == nil {
-		qrChan, _ := client.GetQRChannel(ctx)
+		// Usa Background context para o QR channel não ser cancelado quando a requisição HTTP terminar
+		qrChan, _ := client.GetQRChannel(context.Background())
 		if err := client.Connect(); err != nil {
 			return nil, fmt.Errorf("connect failed: %w", err)
 		}
@@ -206,15 +228,25 @@ func (m *Manager) Connect(ctx context.Context, name string) (domain.Session, err
 }
 
 func (m *Manager) handleQR(session *Session, qrChan <-chan whatsmeow.QRChannelItem) {
+	qrCount := 0
 	for evt := range qrChan {
-		if evt.Event == "code" {
+		switch evt.Event {
+		case "code":
+			qrCount++
 			session.setQRCode(evt.Code)
-			m.log.Info().Str("name", session.Name).Msg("QR code received")
-			fmt.Printf("\n=== QR Code for session '%s' ===\n", session.Name)
+			m.log.Info().Str("name", session.Name).Int("qr_number", qrCount).Msg("QR code received")
+			fmt.Printf("\n=== QR Code #%d for session '%s' (expires in ~20s) ===\n", qrCount, session.Name)
 			qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
-			fmt.Println("================================")
+			fmt.Println("====================================================")
+		case "timeout":
+			session.setQRCode("")
+			m.log.Warn().Str("name", session.Name).Int("qr_count", qrCount).Msg("QR code timeout - no more codes will be generated")
+		case "success":
+			session.setQRCode("")
+			m.log.Info().Str("name", session.Name).Msg("QR code scanned successfully")
 		}
 	}
+	m.log.Debug().Str("name", session.Name).Msg("QR channel closed")
 }
 
 func (m *Manager) handleEvent(session *Session, evt interface{}) {

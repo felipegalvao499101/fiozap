@@ -75,7 +75,7 @@ func (r *sessionRepository) List(ctx context.Context) ([]*SessionModel, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var sessions []*SessionModel
 	for rows.Next() {
